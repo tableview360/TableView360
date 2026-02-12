@@ -14,12 +14,18 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-[1000] bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl border-b border-slate-400/10 shadow-[0_4px_30px_rgba(0,0,0,0.2)]">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <a href="/" className="flex items-center gap-2 no-underline text-slate-50">
+        <a
+          href="/"
+          className="flex items-center gap-2 no-underline text-slate-50"
+        >
           <span className="text-3xl bg-gradient-to-br from-indigo-500 via-violet-500 to-purple-500 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]">
             ◈
           </span>
           <span className="text-2xl font-bold tracking-tight">
-            TableView<span className="bg-gradient-to-br from-indigo-500 to-purple-500 bg-clip-text text-transparent">360</span>
+            TableView
+            <span className="bg-gradient-to-br from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+              360
+            </span>
           </span>
         </a>
 
