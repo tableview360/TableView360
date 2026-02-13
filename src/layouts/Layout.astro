@@ -1,6 +1,7 @@
 ---
 import Header from '../components/Header';
 import '../styles/global.css';
+import SpeedInsights from '@vercel/speed-insights/astro';
 
 interface Props {
   title?: string;
@@ -26,10 +27,11 @@ const { title = 'TableView360' } = Astro.props;
     />
   </head>
   <body
-    class="font-['Inter',_-apple-system,_BlinkMacSystemFont,_'Segoe_UI',_Roboto,_sans-serif] bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_50%,#0f172a_100%)] min-h-screen text-slate-50 leading-relaxed selection:bg-violet-500/30 selection:text-white"
+    class="font-['Inter',_-apple-system,_BlinkMacSystemFont,_'Segoe_UI',_Roboto,_sans-serif] min-h-screen bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_50%,#0f172a_100%)] text-slate-50 selection:bg-violet-500/30 leading-relaxed selection:text-white"
   >
+    <SpeedInsights />
     <Header client:load />
-    <main class="pt-20 min-h-screen">
+    <main class="min-h-screen pt-20">
       <slot />
     </main>
   </body>
