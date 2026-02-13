@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import ReservationsList from '../components/ReservationsList';
 ---
 
 <Layout title="TableView360 - Inicio">
@@ -13,4 +14,6 @@ import Layout from '../layouts/Layout.astro';
       La mejor plataforma para visualizar tus datos en 360°
     </p>
   </section>
+
+  <ReservationsList client:load />
 </Layout>
