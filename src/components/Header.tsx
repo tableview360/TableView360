@@ -4,10 +4,10 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: 'Inicio', href: '/' },
-    { name: 'Productos', href: '/productos' },
-    { name: 'Nosotros', href: '/nosotros' },
-    { name: 'Contacto', href: '/contacto' },
+    { name: 'Home', href: '/' },
+    { name: 'Products', href: '/productos' },
+    { name: 'About', href: '/nosotros' },
+    { name: 'Contact', href: '/contacto' },
   ];
 
   return (
@@ -41,10 +41,16 @@ const Header = () => {
             </a>
           ))}
           <a
+            href="/register"
+            className="text-slate-300 no-underline text-[0.95rem] font-medium transition-colors duration-200 hover:text-slate-50 border border-slate-600 px-4 py-2 rounded-lg hover:border-slate-500"
+          >
+            Sign Up
+          </a>
+          <a
             href="/demo"
             className="bg-gradient-to-br from-indigo-500 to-violet-500 text-white px-5 py-2.5 rounded-lg no-underline font-semibold text-sm shadow-[0_4px_15px_rgba(99,102,241,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(99,102,241,0.5)]"
           >
-            Ver Demo
+            Try Demo
           </a>
         </nav>
 
@@ -85,10 +91,16 @@ const Header = () => {
             </a>
           ))}
           <a
+            href="/register"
+            className="text-slate-300 no-underline py-3 text-base font-medium border border-slate-600 rounded-lg text-center hover:text-slate-50 transition-colors"
+          >
+            Sign Up
+          </a>
+          <a
             href="/demo"
             className="bg-gradient-to-br from-indigo-500 to-violet-500 text-white py-3.5 rounded-lg no-underline font-semibold text-center mt-2"
           >
-            Ver Demo
+            Try Demo
           </a>
         </nav>
       )}
