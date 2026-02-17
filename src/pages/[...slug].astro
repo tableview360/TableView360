@@ -1,13 +1,20 @@
 ---
-import Header from '../components/Header';
 import '../styles/global.css';
+import App from '../App';
 import SpeedInsights from '@vercel/speed-insights/astro';
 
-interface Props {
-  title?: string;
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'login' } },
+    { params: { slug: 'register' } },
+    { params: { slug: 'settings' } },
+    { params: { slug: 'demo' } },
+    { params: { slug: 'productos' } },
+    { params: { slug: 'nosotros' } },
+    { params: { slug: 'contacto' } },
+    { params: { slug: 'forgot-password' } },
+  ];
 }
-
-const { title = 'TableView360' } = Astro.props;
 ---
 
 <!doctype html>
@@ -18,7 +25,7 @@ const { title = 'TableView360' } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
+    <title>TableView360</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -30,9 +37,6 @@ const { title = 'TableView360' } = Astro.props;
     class="font-['Inter',_-apple-system,_BlinkMacSystemFont,_'Segoe_UI',_Roboto,_sans-serif] min-h-screen bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_50%,#0f172a_100%)] text-slate-50 selection:bg-violet-500/30 leading-relaxed selection:text-white"
   >
     <SpeedInsights />
-    <Header client:load />
-    <main class="min-h-screen pt-20">
-      <slot />
-    </main>
+    <App client:only="react" />
   </body>
 </html>

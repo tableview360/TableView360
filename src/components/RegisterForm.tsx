@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 
 // Icon components
@@ -224,6 +225,7 @@ const RegisterForm = () => {
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -520,12 +522,12 @@ const RegisterForm = () => {
         {/* Footer */}
         <p className="mt-8 text-center text-slate-500 text-sm">
           Already have an account?{' '}
-          <a
-            href="/login"
+          <Link
+            to="/login"
             className="text-indigo-400 font-semibold hover:text-indigo-300 transition-colors"
           >
             Sign in →
-          </a>
+          </Link>
         </p>
       </div>
     </div>
