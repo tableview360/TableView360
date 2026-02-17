@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface Profile {
   username: string | null;
@@ -24,6 +26,8 @@ const UserMenu = ({
 }: UserMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
+  const { getLocalizedPath } = useLanguage();
 
   // Cierra el dropdown al hacer click fuera
   useEffect(() => {
@@ -49,17 +53,17 @@ const UserMenu = ({
           </p>
         </div>
         <Link
-          to="/settings"
+          to={getLocalizedPath('/settings')}
           className="text-slate-300 no-underline py-3 text-base font-medium border-b border-slate-400/10 hover:text-slate-50 transition-colors"
           onClick={closeMenu}
         >
-          Settings
+          {t('nav.settings')}
         </Link>
         <button
           onClick={handleSignOut}
           className="text-red-400 py-3 text-base font-medium border-b border-slate-400/10 hover:text-red-300 transition-colors bg-transparent border-none cursor-pointer text-left"
         >
-          Sign Out
+          {t('nav.signout')}
         </button>
       </>
     );
@@ -103,16 +107,16 @@ const UserMenu = ({
             </p>
           </div>
           <Link
-            to="/settings"
+            to={getLocalizedPath('/settings')}
             className="flex items-center gap-2 px-4 py-3 text-slate-300 hover:bg-slate-700 hover:text-slate-50 transition-colors no-underline"
           >
-            Settings
+            {t('nav.settings')}
           </Link>
           <button
             onClick={handleSignOut}
             className="flex items-center gap-2 w-full px-4 py-3 text-red-400 hover:bg-slate-700 hover:text-red-300 transition-colors bg-transparent border-none cursor-pointer text-left"
           >
-            Sign Out
+            {t('nav.signout')}
           </button>
         </div>
       )}

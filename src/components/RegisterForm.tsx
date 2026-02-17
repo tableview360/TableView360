@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+import { useTranslation } from 'react-i18next';
 
 // Icon components
 const UserIcon = () => (
@@ -226,6 +227,7 @@ const RegisterForm = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -325,8 +327,10 @@ const RegisterForm = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/30 mb-4">
             <UserIcon />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
-          <p className="text-slate-400">Join TableView360 today</p>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            {t('Create Account')}
+          </h1>
+          <p className="text-slate-400">{t('Join TableView360 today')}</p>
         </div>
 
         {/* Tabs */}
@@ -347,7 +351,7 @@ const RegisterForm = () => {
             }`}
             onClick={() => setTab('client')}
           >
-            👤 Customer
+            👤 {t('Customer')}
           </button>
           <button
             type="button"
@@ -358,7 +362,7 @@ const RegisterForm = () => {
             }`}
             onClick={() => setTab('restaurant')}
           >
-            🍽️ Restaurant
+            🍽️ {t('Restaurant')}
           </button>
         </div>
 
@@ -415,7 +419,9 @@ const RegisterForm = () => {
             <div className="pt-4 border-t border-slate-700/50 space-y-5">
               <div className="flex items-center gap-2 text-slate-300">
                 <MapPinIcon />
-                <span className="text-sm font-medium">Restaurant Address</span>
+                <span className="text-sm font-medium">
+                  {t('Restaurant Address')}
+                </span>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="relative">
@@ -494,11 +500,11 @@ const RegisterForm = () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Creating account...
+                  {t('Creating account...')}
                 </>
               ) : (
                 <>
-                  Create Account
+                  {t('Create Account')}
                   <ArrowIcon />
                 </>
               )}
@@ -521,12 +527,12 @@ const RegisterForm = () => {
 
         {/* Footer */}
         <p className="mt-8 text-center text-slate-500 text-sm">
-          Already have an account?{' '}
+          {t('Already have an account?')}{' '}
           <Link
             to="/login"
             className="text-indigo-400 font-semibold hover:text-indigo-300 transition-colors"
           >
-            Sign in →
+            {t('Sign in')} →
           </Link>
         </p>
       </div>

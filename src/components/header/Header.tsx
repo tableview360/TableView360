@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
 import NavLinks from './NavLinks';
+import LanguageSelector from './LanguageSelector';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface Profile {
   username: string | null;
@@ -15,6 +17,7 @@ const Header = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { getLocalizedPath } = useLanguage();
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -56,7 +59,7 @@ const Header = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate('/');
+    navigate(getLocalizedPath('/'));
   };
 
   return (
@@ -64,7 +67,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link
-          to="/"
+          to={getLocalizedPath('/')}
           className="flex items-center gap-2 no-underline text-slate-50"
         >
           <span className="text-3xl bg-gradient-to-br from-indigo-500 via-violet-500 to-purple-500 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]">
@@ -85,6 +88,8 @@ const Header = () => {
           profile={profile}
           handleSignOut={handleSignOut}
         />
+
+        <LanguageSelector />
 
         {/* Mobile Menu Button */}
         <button

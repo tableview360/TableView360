@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchReservations } from '../lib/supabaseClient';
-
+import { useTranslation } from 'react-i18next';
 interface Reservation {
   id: number;
   created_at: string;
@@ -17,6 +17,7 @@ const ReservationsList = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadReservations();
@@ -59,7 +60,7 @@ const ReservationsList = () => {
       <section className="max-w-7xl mx-auto py-20 px-6">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-slate-700 border-t-violet-500" />
-          <p className="mt-4 text-slate-400">Cargando reservas...</p>
+          <p className="mt-4 text-slate-400">{t('Loading reservations...')}</p>
         </div>
       </section>
     );
@@ -71,14 +72,14 @@ const ReservationsList = () => {
         <div className="text-center bg-red-900/20 border border-red-500/50 rounded-2xl p-8">
           <span className="text-4xl mb-4 block">⚠️</span>
           <h3 className="text-xl font-semibold text-red-400 mb-2">
-            Error al cargar
+            {t('Error loading')}
           </h3>
           <p className="text-slate-400">{error}</p>
           <button
             onClick={loadReservations}
             className="mt-4 bg-gradient-to-br from-indigo-500 to-violet-500 text-white px-6 py-2.5 rounded-lg font-semibold text-sm shadow-lg transition-all duration-200 hover:-translate-y-0.5"
           >
-            Reintentar
+            {t('Retry')}
           </button>
         </div>
       </section>
@@ -89,12 +90,12 @@ const ReservationsList = () => {
     <section className="max-w-7xl mx-auto py-20 px-6">
       <div className="text-center mb-12">
         <h2 className="text-4xl font-bold mb-4 bg-gradient-to-br from-slate-50 to-slate-300 bg-clip-text text-transparent">
-          Lista de Reservas
+          {t('Reserve List')}
         </h2>
         <p className="text-lg text-slate-400">
           {reservations.length === 0
-            ? 'No hay reservas en este momento'
-            : `${reservations.length} reserva${reservations.length !== 1 ? 's' : ''} encontrada${reservations.length !== 1 ? 's' : ''}`}
+            ? t('No reservations at this time')
+            : t('reservations_count', { count: reservations.length })}
         </p>
       </div>
 
@@ -102,7 +103,7 @@ const ReservationsList = () => {
         <div className="text-center py-12 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl">
           <span className="text-6xl block mb-4">📋</span>
           <p className="text-slate-400 text-lg">
-            Aún no hay reservas registradas
+            {t('There are no reservations registered yet')}
           </p>
         </div>
       ) : (
@@ -146,7 +147,7 @@ const ReservationsList = () => {
           onClick={loadReservations}
           className="bg-gradient-to-br cursor-pointer from-indigo-500 to-violet-500 text-white px-6 py-3 rounded-lg font-semibold text-sm shadow-[0_4px_15px_rgba(99,102,241,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(99,102,241,0.5)]"
         >
-          🔄 Actualizar Lista
+          🔄 {t('Update List')}
         </button>
       </div>
     </section>
