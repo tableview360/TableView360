@@ -4,16 +4,28 @@ import App from '../App';
 import SpeedInsights from '@vercel/speed-insights/astro';
 
 export function getStaticPaths() {
-  return [
-    { params: { slug: 'login' } },
-    { params: { slug: 'register' } },
-    { params: { slug: 'settings' } },
-    { params: { slug: 'demo' } },
-    { params: { slug: 'productos' } },
-    { params: { slug: 'nosotros' } },
-    { params: { slug: 'contacto' } },
-    { params: { slug: 'forgot-password' } },
+  const routes = [
+    'login',
+    'register',
+    'settings',
+    'demo',
+    'productos',
+    'nosotros',
+    'contacto',
+    'forgot-password',
   ];
+  const languages = ['es']; // Solo idiomas con prefijo (inglés es default sin prefijo)
+
+  const paths = [
+    // Rutas en inglés (sin prefijo)
+    ...routes.map((route) => ({ params: { slug: route } })),
+    // Rutas con prefijo de idioma
+    ...languages.map((lang) => ({ params: { slug: lang } })), // /es (home)
+    ...languages.flatMap((lang) =>
+      routes.map((route) => ({ params: { slug: `${lang}/${route}` } }))
+    ),
+  ];
+  return paths;
 }
 ---
 

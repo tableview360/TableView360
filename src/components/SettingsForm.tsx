@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
+import { useTranslation } from 'react-i18next';
 
 interface Profile {
   id: string;
@@ -18,6 +19,7 @@ const SettingsForm = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Password change states
   const [newPassword, setNewPassword] = useState('');
@@ -115,18 +117,18 @@ const SettingsForm = () => {
               d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
             />
           </svg>
-          Profile Information
+          {t('Profile Information')}
         </h2>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
-            <span className="text-slate-400">Username</span>
+            <span className="text-slate-400">{t('Username')}</span>
             <span className="text-slate-200 font-medium">
               {profile?.username || '-'}
             </span>
           </div>
           <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
-            <span className="text-slate-400">Full Name</span>
+            <span className="text-slate-400">{t('Full Name')}</span>
             <span className="text-slate-200 font-medium">
               {profile?.full_name || '-'}
             </span>
@@ -138,13 +140,13 @@ const SettingsForm = () => {
             </span>
           </div>
           <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
-            <span className="text-slate-400">Phone</span>
+            <span className="text-slate-400">{t('Phone')}</span>
             <span className="text-slate-200 font-medium">
               {profile?.phone || '-'}
             </span>
           </div>
           <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
-            <span className="text-slate-400">Account Type</span>
+            <span className="text-slate-400">{t('Account Type')}</span>
             <span
               className={`px-3 py-1 rounded-full text-sm font-medium ${
                 profile?.role === 'restaurant'
@@ -186,13 +188,13 @@ const SettingsForm = () => {
               d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
             />
           </svg>
-          Change Password
+          {t('Change Password')}
         </h2>
 
         <form onSubmit={handlePasswordChange} className="space-y-5">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-400 ml-1">
-              New Password
+              {t('New Password')}
             </label>
             <input
               type="password"
@@ -206,7 +208,7 @@ const SettingsForm = () => {
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-400 ml-1">
-              Confirm New Password
+              {t('Confirm New Password')}
             </label>
             <input
               type="password"
@@ -255,7 +257,7 @@ const SettingsForm = () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Updating...
+                  {t('Updating...')}
                 </>
               ) : (
                 'Update Password'
