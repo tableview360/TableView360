@@ -212,6 +212,7 @@ const PasswordField = ({
 const RegisterForm = () => {
   const [tab, setTab] = useState<'client' | 'restaurant'>('client');
   const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
@@ -233,10 +234,15 @@ const RegisterForm = () => {
     try {
       console.log('🚀 Starting registration...');
 
-      // Step 1: Create auth user
+      // Step 1: Create auth user (trigger creates profile automatically)
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            role: tab,
+          },
+        },
       });
 
       console.log('📧 Auth response:', { authData, authError });
@@ -256,22 +262,22 @@ const RegisterForm = () => {
 
       console.log('✅ User created with ID:', userId);
 
-      // Step 2: Create profile
-      const { error: profileError } = await supabase.from('profiles').insert([
-        {
-          id: userId,
-          role: tab,
+      // Step 2: Update profile with additional info
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
           full_name: fullName,
+          username,
           phone,
-        },
-      ]);
+        })
+        .eq('id', userId);
 
       if (profileError) {
-        console.error('❌ Profile error:', profileError);
+        console.error('❌ Profile update error:', profileError);
         throw new Error(`Profile error: ${profileError.message}`);
       }
 
-      console.log('✅ Profile created');
+      console.log('✅ Profile updated');
 
       // Step 3: If restaurant, create restaurant profile
       if (tab === 'restaurant') {
@@ -363,6 +369,16 @@ const RegisterForm = () => {
             placeholder="John Doe"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
+            required
+          />
+
+          <InputField
+            icon={<UserIcon />}
+            label="Username"
+            type="text"
+            placeholder="johndoe123"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
 
