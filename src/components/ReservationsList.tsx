@@ -144,7 +144,7 @@ const ReservationsList = () => {
       <div className="text-center mt-8">
         <button
           onClick={loadReservations}
-          className="bg-gradient-to-br from-indigo-500 to-violet-500 text-white px-6 py-3 rounded-lg font-semibold text-sm shadow-[0_4px_15px_rgba(99,102,241,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(99,102,241,0.5)]"
+          className="bg-gradient-to-br cursor-pointer from-indigo-500 to-violet-500 text-white px-6 py-3 rounded-lg font-semibold text-sm shadow-[0_4px_15px_rgba(99,102,241,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(99,102,241,0.5)]"
         >
           🔄 Actualizar Lista
         </button>

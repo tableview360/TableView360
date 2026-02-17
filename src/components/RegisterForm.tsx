@@ -338,7 +338,7 @@ const RegisterForm = () => {
           />
           <button
             type="button"
-            className={`relative z-10 flex-1 py-3.5 font-semibold text-center rounded-xl transition-colors duration-200 ${
+            className={`relative z-10 cursor-pointer flex-1 py-3.5 font-semibold text-center rounded-xl transition-colors duration-200 ${
               tab === 'client'
                 ? 'text-white'
                 : 'text-slate-500 hover:text-slate-300'
@@ -349,7 +349,7 @@ const RegisterForm = () => {
           </button>
           <button
             type="button"
-            className={`relative z-10 flex-1 py-3.5 font-semibold text-center rounded-xl transition-colors duration-200 ${
+            className={`relative z-10 cursor-pointer flex-1 py-3.5 font-semibold text-center rounded-xl transition-colors duration-200 ${
               tab === 'restaurant'
                 ? 'text-white'
                 : 'text-slate-500 hover:text-slate-300'
@@ -473,7 +473,7 @@ const RegisterForm = () => {
             className="relative w-full mt-8 group"
           >
             <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-2xl blur-lg opacity-70 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-2xl text-white font-semibold text-lg shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-indigo-500/30 group-active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+            <div className="relative cursor-pointer flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-2xl text-white font-semibold text-lg shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-indigo-500/30 group-active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
               {isLoading ? (
                 <>
                   <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
