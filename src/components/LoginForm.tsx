@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 
 // Icon components
@@ -177,6 +178,7 @@ const LoginForm = () => {
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,7 +190,7 @@ const LoginForm = () => {
       console.log('🔐 Attempting login...');
 
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim(),
         password,
       });
 
@@ -199,14 +201,14 @@ const LoginForm = () => {
         throw error;
       }
 
-      if (data.user) {
-        console.log('✅ Login successful:', data.user.email);
-        setMessage('Login successful! Redirecting...');
-
-        // Redirect to home page after successful login
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 1000);
+      if (data.session) {
+        console.log('✅ Login successful:', data.user?.email);
+        console.log(
+          '✅ Session stored:',
+          data.session.access_token.substring(0, 20) + '...'
+        );
+        setMessage('Login successful!');
+        navigate('/');
       }
     } catch (error) {
       console.error('❌ Login failed:', error);
@@ -263,12 +265,12 @@ const LoginForm = () => {
 
           {/* Forgot Password Link */}
           <div className="text-right">
-            <a
-              href="/forgot-password"
+            <Link
+              to="/forgot-password"
               className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
             >
               Forgot password?
-            </a>
+            </Link>
           </div>
 
           {/* Submit Button */}
@@ -325,12 +327,12 @@ const LoginForm = () => {
         {/* Footer */}
         <p className="mt-8 text-center text-slate-500 text-sm">
           Don&apos;t have an account?{' '}
-          <a
-            href="/register"
+          <Link
+            to="/register"
             className="text-indigo-400 font-semibold hover:text-indigo-300 transition-colors"
           >
             Sign up →
-          </a>
+          </Link>
         </p>
       </div>
     </div>

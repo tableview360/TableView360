@@ -1,19 +1,29 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import ReservationsList from '../components/ReservationsList';
+import '../styles/global.css';
+import App from '../App';
+import SpeedInsights from '@vercel/speed-insights/astro';
 ---
 
-<Layout title="TableView360 - Inicio">
-  <section class="max-w-7xl mx-auto py-16 px-6 text-center">
-    <h1
-      class="text-[3.5rem] font-bold mb-6 bg-gradient-to-br from-slate-50 to-slate-300 bg-clip-text text-transparent"
-    >
-      Bienvenido a TableView360
-    </h1>
-    <p class="text-xl text-slate-400 max-w-[600px] mx-auto">
-      La mejor plataforma para visualizar tus datos en 360°
-    </p>
-  </section>
-
-  <ReservationsList client:load />
-</Layout>
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>TableView360</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    class="font-['Inter',_-apple-system,_BlinkMacSystemFont,_'Segoe_UI',_Roboto,_sans-serif] min-h-screen bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_50%,#0f172a_100%)] text-slate-50 selection:bg-violet-500/30 leading-relaxed selection:text-white"
+  >
+    <SpeedInsights />
+    <App client:only="react" />
+  </body>
+</html>
