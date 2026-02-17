@@ -41,6 +41,12 @@ const Header = () => {
             </a>
           ))}
           <a
+            href="/login"
+            className="text-slate-300 no-underline text-[0.95rem] font-medium transition-colors duration-200 hover:text-slate-50"
+          >
+            Sign In
+          </a>
+          <a
             href="/register"
             className="text-slate-300 no-underline text-[0.95rem] font-medium transition-colors duration-200 hover:text-slate-50 border border-slate-600 px-4 py-2 rounded-lg hover:border-slate-500"
           >
@@ -90,6 +96,12 @@ const Header = () => {
               {link.name}
             </a>
           ))}
+          <a
+            href="/login"
+            className="text-slate-300 no-underline py-3 text-base font-medium border-b border-slate-400/10 hover:text-slate-50 transition-colors"
+          >
+            Sign In
+          </a>
           <a
             href="/register"
             className="text-slate-300 no-underline py-3 text-base font-medium border border-slate-600 rounded-lg text-center hover:text-slate-50 transition-colors"
