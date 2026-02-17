@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
+import { SpinnerIcon, UserIcon, LockIcon } from './icons';
+import PasswordField from './ui/Form/PasswordField';
 
 interface Profile {
   id: string;
@@ -94,7 +96,7 @@ const SettingsForm = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
+        <SpinnerIcon />
       </div>
     );
   }
@@ -104,19 +106,11 @@ const SettingsForm = () => {
       {/* User Info Card */}
       <div className="p-8 bg-gradient-to-b from-slate-800/80 to-slate-900/80 rounded-3xl shadow-2xl border border-slate-700/40 backdrop-blur-2xl">
         <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-          <svg
-            className="w-6 h-6 text-indigo-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
-          </svg>
+          <UserIcon
+            size={24}
+            color="currentColor"
+            className="text-indigo-400"
+          />
           {t('Profile Information')}
         </h2>
 
@@ -134,7 +128,7 @@ const SettingsForm = () => {
             </span>
           </div>
           <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
-            <span className="text-slate-400">Email</span>
+            <span className="text-slate-400">{t('Email')}</span>
             <span className="text-slate-200 font-medium">
               {user?.email || '-'}
             </span>
@@ -158,7 +152,7 @@ const SettingsForm = () => {
             </span>
           </div>
           <div className="flex items-center justify-between py-3">
-            <span className="text-slate-400">Member Since</span>
+            <span className="text-slate-400">{t('Member Since')}</span>
             <span className="text-slate-200 font-medium">
               {profile?.created_at
                 ? new Date(profile.created_at).toLocaleDateString('en-US', {
@@ -175,50 +169,25 @@ const SettingsForm = () => {
       {/* Change Password Card */}
       <div className="p-8 bg-gradient-to-b from-slate-800/80 to-slate-900/80 rounded-3xl shadow-2xl border border-slate-700/40 backdrop-blur-2xl">
         <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-          <svg
-            className="w-6 h-6 text-indigo-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-            />
-          </svg>
+          <LockIcon
+            size={24}
+            color="currentColor"
+            className="text-indigo-400"
+          />
           {t('Change Password')}
         </h2>
 
         <form onSubmit={handlePasswordChange} className="space-y-5">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-400 ml-1">
-              {t('New Password')}
-            </label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              className="w-full px-4 py-4 rounded-2xl bg-slate-800/40 border border-slate-700/50 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500/60 focus:bg-slate-800/60 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-400 ml-1">
-              {t('Confirm New Password')}
-            </label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              className="w-full px-4 py-4 rounded-2xl bg-slate-800/40 border border-slate-700/50 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-indigo-500/60 focus:bg-slate-800/60 focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300"
-            />
-          </div>
+          <PasswordField
+            label={t('New Password')}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+          <PasswordField
+            label={t('Confirm New Password')}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
 
           {passwordMessage && (
             <div
@@ -241,22 +210,7 @@ const SettingsForm = () => {
             <div className="relative flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-2xl text-white font-semibold text-lg shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-indigo-500/30 group-active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
               {isChangingPassword ? (
                 <>
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
+                  <SpinnerIcon className="animate-spin h-5 w-5" />
                   {t('Updating...')}
                 </>
               ) : (
