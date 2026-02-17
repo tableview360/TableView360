@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../hooks/useLanguage';
+import DropdownArrow from '../../components/icons/DropdownArrow';
 
 interface Profile {
   username: string | null;
@@ -29,20 +30,16 @@ const UserMenu = ({
   const { t } = useTranslation();
   const { getLocalizedPath } = useLanguage();
 
-  // Cierra el dropdown al hacer click fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Versión mobile: dropdown siempre abierto como menú
   if (isMobile) {
     return (
       <>
@@ -83,19 +80,7 @@ const UserMenu = ({
         <span className="text-[0.95rem] font-medium">
           {profile?.username || profile?.full_name || 'User'}
         </span>
-        <svg
-          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+        <DropdownArrow isOpen={isOpen} />
       </button>
 
       {isOpen && (

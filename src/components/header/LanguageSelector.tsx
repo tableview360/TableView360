@@ -1,38 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  useLanguage,
-  SUPPORTED_LANGUAGES,
-  type SupportedLanguage,
-} from '../../hooks/useLanguage';
-
-const GlobeIcon = () => (
-  <svg
-    className="w-5 h-5"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      d="M12 21a9 9 0 100-18 9 9 0 000 18z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      d="M3.6 9h16.8M3.6 15h16.8"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      d="M12 3a15.3 15.3 0 014 9 15.3 15.3 0 01-4 9 15.3 15.3 0 01-4-9 15.3 15.3 0 014-9z"
-    />
-  </svg>
-);
+import { useLanguage, type SupportedLanguage } from '../../hooks/useLanguage';
+import { GlobeIcon, DropdownArrow, CheckIcon } from '../icons';
 
 const languages: { code: SupportedLanguage; label: string; flag: string }[] = [
   { code: 'en', label: 'English', flag: '🇬🇧' },
@@ -76,19 +45,7 @@ const LanguageSelector = () => {
         <span className="text-sm font-medium">
           {currentLangData.code.toUpperCase()}
         </span>
-        <svg
-          className={`w-3 h-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+        <DropdownArrow isOpen={isOpen} />
       </button>
 
       {isOpen && (
@@ -105,19 +62,7 @@ const LanguageSelector = () => {
             >
               <span className="text-lg">{lang.flag}</span>
               <span className="text-sm font-medium">{lang.label}</span>
-              {currentLang === lang.code && (
-                <svg
-                  className="w-4 h-4 ml-auto text-indigo-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              )}
+              {currentLang === lang.code && <CheckIcon />}
             </button>
           ))}
         </div>
