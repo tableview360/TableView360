@@ -33,7 +33,7 @@ const NavLinks = ({
     { name: t('nav.home'), href: getLocalizedPath('/') },
     { name: t('nav.products'), href: getLocalizedPath('/productos') },
     { name: t('nav.about'), href: getLocalizedPath('/nosotros') },
-    { name: t('nav.contact'), href: getLocalizedPath('/contacto') },
+    { name: t('nav.contact'), href: getLocalizedPath('/contact-us') },
   ];
 
   const baseClass = isMobile
