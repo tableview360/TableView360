@@ -5,7 +5,7 @@ interface IconProps extends SVGProps<SVGSVGElement> {
   color?: string;
 }
 
-const LockIcon = ({
+const CheckIcon = ({
   size = 20,
   color = 'currentColor',
   className = '',
@@ -21,12 +21,11 @@ const LockIcon = ({
     className={className}
   >
     <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={1.5}
-      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+      fillRule="evenodd"
+      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+      clipRule="evenodd"
     />
   </svg>
 );
 
-export default LockIcon;
+export default CheckIcon;
