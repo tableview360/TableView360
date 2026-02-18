@@ -1,14 +1,16 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../hooks/useLanguage';
 
 const Footer = () => {
   const { t } = useTranslation();
+  const { getLocalizedPath } = useLanguage();
 
   const pages = [
-    { name: t('FAQ'), href: '/faq' },
-    { name: t('Terms of Service'), href: '/terms' },
-    { name: t('Privacy / GDPR'), href: '/privacy' },
-    { name: t('Contact Us'), href: '/contacto' },
+    { name: t('FAQ'), href: getLocalizedPath('/faq') },
+    { name: t('Terms of Service'), href: getLocalizedPath('/terms') },
+    { name: t('Privacy / GDPR'), href: getLocalizedPath('/privacy') },
+    { name: t('Contact Us'), href: getLocalizedPath('/contact-us') },
   ];
 
   return (

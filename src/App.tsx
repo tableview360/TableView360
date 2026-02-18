@@ -25,7 +25,7 @@ const AppRoutes = () => (
     <Route path="faq" element={<FAQPage />} />
     <Route path="terms" element={<TermsPage />} />
     <Route path="privacy" element={<PrivacyPage />} />
-    <Route path="contacto" element={<ContactPage />} />
+    <Route path="contact-us" element={<ContactPage />} />
     <Route path="*" element={<NotFoundPage />} />
   </>
 );
