@@ -12,47 +12,36 @@ export const isValidLanguage = (
   return SUPPORTED_LANGUAGES.includes(lang as SupportedLanguage);
 };
 
-export const useLanguage = () => {
+export const useLanguage = (enabled = true) => {
   const { lang } = useParams<{ lang?: string }>();
   const { i18n } = useTranslation();
   const location = useLocation();
 
-  // Detectar idioma de la URL
-  const currentLang: SupportedLanguage = isValidLanguage(lang)
-    ? lang
-    : DEFAULT_LANGUAGE;
+  const currentLang = isValidLanguage(lang) ? lang : DEFAULT_LANGUAGE;
 
   useEffect(() => {
+    if (!enabled) return; // si no está habilitado (standalone), no hace nada
+
     if (i18n.language !== currentLang) {
       i18n.changeLanguage(currentLang);
     }
-  }, [currentLang, i18n]);
+  }, [currentLang, i18n, enabled]);
 
-  // Función para generar path con idioma
   const getLocalizedPath = (path: string, targetLang?: SupportedLanguage) => {
     const language = targetLang || currentLang;
     const cleanPath = path.startsWith('/') ? path : `/${path}`;
-
-    // Si es inglés (default), no añadir prefijo
-    if (language === DEFAULT_LANGUAGE) {
-      return cleanPath;
-    }
-
+    if (language === DEFAULT_LANGUAGE) return cleanPath;
     return `/${language}${cleanPath}`;
   };
 
-  // Función para cambiar idioma manteniendo la ruta actual
   const getPathForLanguage = (targetLang: SupportedLanguage) => {
     let currentPath = location.pathname;
-
-    // Remover prefijo de idioma actual si existe
     for (const lng of SUPPORTED_LANGUAGES) {
       if (lng !== DEFAULT_LANGUAGE && currentPath.startsWith(`/${lng}`)) {
         currentPath = currentPath.slice(lng.length + 1) || '/';
         break;
       }
     }
-
     return getLocalizedPath(currentPath, targetLang);
   };
 
