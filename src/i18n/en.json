@@ -47,5 +47,13 @@
   "Account Settings": "Account Settings",
   "Page not found": "Page not found",
   "The page you are looking for does not exist or has been moved.": "The page you are looking for does not exist or has been moved.",
-  "Go back home": "Go back home"
+  "Go back home": "Go back home",
+  "Forgot your password?": "Forgot your password?",
+  "Enter your email and we will send you a reset link.": "Enter your email and we will send you a reset link.",
+  "Email address": "Email address",
+  "Send reset link": "Send reset link",
+  "Sending...": "Sending...",
+  "If this email exists, a reset link has been sent.": "If this email exists, a reset link has been sent.",
+  "Remember your password?": "Remember your password?",
+  "Back to login": "Back to login"
 }

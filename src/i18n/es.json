@@ -47,5 +47,13 @@
   "Account Settings": "Configuraciones de la cuenta",
   "Page not found": "Página no encontrada",
   "The page you are looking for does not exist or has been moved.": "La página que buscas no existe o ha sido movida.",
-  "Go back home": "Volver al inicio"
+  "Go back home": "Volver al inicio",
+  "Forgot your password?": "¿Olvidaste tu contraseña?",
+  "Enter your email and we will send you a reset link.": "Introduce tu correo y te enviaremos un enlace para restablecerla.",
+  "Email address": "Correo electrónico",
+  "Send reset link": "Enviar enlace",
+  "Sending...": "Enviando...",
+  "If this email exists, a reset link has been sent.": "Si el correo existe, se ha enviado un enlace de recuperación.",
+  "Remember your password?": "¿Recuerdas tu contraseña?",
+  "Back to login": "Volver al login"
 }
