@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Header from '../components/header/Header';
+import Footer from '../components/footer/footer';
 import { useLanguage } from '../hooks/useLanguage';
 
 interface LayoutProps {
@@ -16,6 +17,7 @@ const Layout = ({ children, standalone = false }: LayoutProps) => {
       <main className="min-h-screen pt-20">
         {standalone ? children : <Outlet />}
       </main>
+      <Footer />
     </>
   );
 };

@@ -63,5 +63,10 @@
   "Password must be at least 6 characters.": "Password must be at least 6 characters.",
   "Passwords do not match.": "Passwords do not match.",
   "Password updated successfully. Redirecting to login...": "Password updated successfully. Redirecting to login...",
-  "Verifying...": "Verifying..."
+  "Verifying...": "Verifying...",
+  "FAQ": "FAQ",
+  "Terms of Service": "Terms of Service",
+  "Privacy / GDPR": "Privacy / GDPR",
+  "Contact Us": "Contact Us",
+  "All rights reserved.": "All rights reserved."
 }
