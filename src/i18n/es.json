@@ -68,5 +68,12 @@
   "Terms of Service": "Términos de servicio",
   "Privacy / GDPR": "Privacidad / GDPR",
   "Contact Us": "Contáctanos",
-  "All rights reserved.": "Todos los derechos reservados."
+  "All rights reserved.": "Todos los derechos reservados.",
+  "Send us a message": "Envíanos un mensaje",
+  "Your Name": "Tu nombre",
+  "Your Email": "Tu correo electrónico",
+  "Your Message": "Tu mensaje",
+  "Send Message": "Enviar mensaje",
+  "Message sent successfully!": "¡Mensaje enviado correctamente!",
+  "Please fill all fields correctly.": "Por favor, completa todos los campos correctamente."
 }
