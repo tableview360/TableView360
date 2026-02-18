@@ -8,6 +8,10 @@ import SettingsPage from './views/SettingsPage';
 import NotFoundPage from './views/NotFoundPage';
 import ForgotPasswordPage from './views/ForgotPasswordPage';
 import ResetPasswordPage from './views/ResetPasswordPage';
+import FAQPage from './views/FAQPage';
+import TermsPage from './views/TermsPage';
+import PrivacyPage from './views/PrivacyPage';
+import ContactPage from './views/ContactPage';
 
 // Rutas de la app (reutilizables)
 const AppRoutes = () => (
@@ -18,6 +22,10 @@ const AppRoutes = () => (
     <Route path="forgot-password" element={<ForgotPasswordPage />} />
     <Route path="reset-password" element={<ResetPasswordPage />} />
     <Route path="settings" element={<SettingsPage />} />
+    <Route path="faq" element={<FAQPage />} />
+    <Route path="terms" element={<TermsPage />} />
+    <Route path="privacy" element={<PrivacyPage />} />
+    <Route path="contacto" element={<ContactPage />} />
     <Route path="*" element={<NotFoundPage />} />
   </>
 );
