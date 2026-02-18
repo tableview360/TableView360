@@ -7,6 +7,7 @@ import RegisterPage from './views/RegisterPage';
 import SettingsPage from './views/SettingsPage';
 import NotFoundPage from './views/NotFoundPage';
 import ForgotPasswordPage from './views/ForgotPasswordPage';
+import ResetPasswordPage from './views/ResetPasswordPage';
 
 // Rutas de la app (reutilizables)
 const AppRoutes = () => (
@@ -15,6 +16,7 @@ const AppRoutes = () => (
     <Route path="login" element={<LoginPage />} />
     <Route path="register" element={<RegisterPage />} />
     <Route path="forgot-password" element={<ForgotPasswordPage />} />
+    <Route path="reset-password" element={<ResetPasswordPage />} />
     <Route path="settings" element={<SettingsPage />} />
     <Route path="*" element={<NotFoundPage />} />
   </>
