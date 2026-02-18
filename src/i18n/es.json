@@ -55,5 +55,13 @@
   "Sending...": "Enviando...",
   "If this email exists, a reset link has been sent.": "Si el correo existe, se ha enviado un enlace de recuperación.",
   "Remember your password?": "¿Recuerdas tu contraseña?",
-  "Back to login": "Volver al login"
+  "Back to login": "Volver al login",
+  "Reset your password": "Restablecer contraseña",
+  "New password": "Nueva contraseña",
+  "Confirm password": "Confirmar contraseña",
+  "Update password": "Actualizar contraseña",
+  "Password must be at least 6 characters.": "La contraseña debe tener al menos 6 caracteres.",
+  "Passwords do not match.": "Las contraseñas no coinciden.",
+  "Password updated successfully. Redirecting to login...": "Contraseña actualizada correctamente. Redirigiendo al login...",
+  "Verifying...": "Verificando..."
 }

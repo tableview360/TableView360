@@ -55,5 +55,13 @@
   "Sending...": "Sending...",
   "If this email exists, a reset link has been sent.": "If this email exists, a reset link has been sent.",
   "Remember your password?": "Remember your password?",
-  "Back to login": "Back to login"
+  "Back to login": "Back to login",
+  "Reset your password": "Reset your password",
+  "New password": "New password",
+  "Confirm password": "Confirm password",
+  "Update password": "Update password",
+  "Password must be at least 6 characters.": "Password must be at least 6 characters.",
+  "Passwords do not match.": "Passwords do not match.",
+  "Password updated successfully. Redirecting to login...": "Password updated successfully. Redirecting to login...",
+  "Verifying...": "Verifying..."
 }
