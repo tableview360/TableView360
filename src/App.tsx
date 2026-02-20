@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import './i18n';
 import Layout from './layouts/Layout';
 import HomePage from './views/HomePage';
@@ -12,6 +12,8 @@ import FAQPage from './views/FAQPage';
 import TermsPage from './views/TermsPage';
 import PrivacyPage from './views/PrivacyPage';
 import ContactPage from './views/ContactPage';
+import RestaurantsPage from './views/RestaurantsPage';
+import RestaurantDetailPage from './views/RestaurantDetailPage';
 
 // Rutas de la app (reutilizables)
 const AppRoutes = () => (
@@ -26,13 +28,15 @@ const AppRoutes = () => (
     <Route path="terms" element={<TermsPage />} />
     <Route path="privacy" element={<PrivacyPage />} />
     <Route path="contact-us" element={<ContactPage />} />
+    <Route path="restaurants" element={<RestaurantsPage />} />
+    <Route path="restaurant/:slug" element={<RestaurantDetailPage />} />
     <Route path="*" element={<NotFoundPage />} />
   </>
 );
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         {/* Rutas en inglés (default) - sin prefijo */}
         <Route path="/" element={<Layout />}>
@@ -44,7 +48,7 @@ const App = () => {
           {AppRoutes()}
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
