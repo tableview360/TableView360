@@ -31,6 +31,7 @@ const NavLinks = ({
 
   const navLinks = [
     { name: t('nav.home'), href: getLocalizedPath('/') },
+    { name: t('nav.restaurants'), href: getLocalizedPath('/restaurants') },
     { name: t('nav.products'), href: getLocalizedPath('/productos') },
     { name: t('nav.about'), href: getLocalizedPath('/nosotros') },
     { name: t('nav.contact'), href: getLocalizedPath('/contact-us') },
