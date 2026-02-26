@@ -2,6 +2,8 @@ import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
 import { runPhotogrammetryPipeline } from '../../../lib/photogrammetryPipeline';
 
+export const prerender = false;
+
 const UPLOAD_BUCKET = 'restaurant-uploads';
 
 export const POST: APIRoute = async ({ request }) => {
