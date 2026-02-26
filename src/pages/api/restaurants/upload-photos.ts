@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
 
+export const prerender = false;
+
 const MAX_PHOTOS = 10;
 const UPLOAD_BUCKET = 'restaurant-uploads';
 

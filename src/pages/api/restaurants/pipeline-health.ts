@@ -2,6 +2,8 @@ import type { APIRoute } from 'astro';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
+export const prerender = false;
+
 const execFileAsync = promisify(execFile);
 const REQUIRED_BINARIES = [
   'colmap',

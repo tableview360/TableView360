@@ -77,6 +77,64 @@ const convertImageToJpeg = async (
   }
 };
 
+interface PhotoValidationResult {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+}
+
+const validatePhotos = async (
+  imagesDir: string,
+  photos: string[]
+): Promise<PhotoValidationResult> => {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const MIN_WIDTH = 800;
+  const MIN_HEIGHT = 600;
+  const MIN_PHOTOS = 15;
+
+  if (photos.length < MIN_PHOTOS) {
+    errors.push(
+      `Se requieren al menos ${MIN_PHOTOS} fotos. Solo hay ${photos.length}.`
+    );
+  }
+
+  for (const photo of photos) {
+    const photoPath = path.join(imagesDir, photo);
+    try {
+      const { stdout } = await execFileAsync('sips', [
+        '-g',
+        'pixelWidth',
+        '-g',
+        'pixelHeight',
+        photoPath,
+      ]);
+
+      const widthMatch = stdout.match(/pixelWidth:\s*(\d+)/);
+      const heightMatch = stdout.match(/pixelHeight:\s*(\d+)/);
+
+      if (widthMatch && heightMatch) {
+        const width = parseInt(widthMatch[1], 10);
+        const height = parseInt(heightMatch[1], 10);
+
+        if (width < MIN_WIDTH || height < MIN_HEIGHT) {
+          warnings.push(
+            `Foto "${photo}" tiene dimensiones pequeñas (${width}x${height}). Mínimo recomendado: ${MIN_WIDTH}x${MIN_HEIGHT}.`
+          );
+        }
+      }
+    } catch {
+      warnings.push(`No se pudo verificar dimensiones de "${photo}".`);
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    warnings,
+  };
+};
+
 export const runPhotogrammetryPipeline = async ({
   supabase,
   supabaseUrl,
@@ -108,9 +166,9 @@ export const runPhotogrammetryPipeline = async ({
     });
 
   if (listError) throw new Error(listError.message);
-  if (!photos || photos.length < 8) {
+  if (!photos || photos.length < 15) {
     throw new Error(
-      'Se requieren al menos 8 fotos para una reconstrucción útil.'
+      'Se requieren al menos 15 fotos para una reconstrucción útil.'
     );
   }
 
@@ -151,6 +209,19 @@ export const runPhotogrammetryPipeline = async ({
       );
     }
 
+    const photoNames = photos.map((p) => p.name);
+    const validation = await validatePhotos(imagesDir, photoNames);
+
+    if (validation.warnings.length > 0) {
+      console.warn('[photogrammetry] Warnings:', validation.warnings);
+    }
+
+    if (!validation.valid) {
+      throw new Error(
+        `Validación de fotos fallida: ${validation.errors.join('; ')}`
+      );
+    }
+
     await run('colmap', [
       'feature_extractor',
       '--database_path',
@@ -164,9 +235,13 @@ export const runPhotogrammetryPipeline = async ({
       '--FeatureExtraction.use_gpu',
       '0',
       '--SiftExtraction.max_image_size',
-      '1600',
+      '3200',
       '--SiftExtraction.max_num_features',
-      '4096',
+      '8192',
+      '--SiftExtraction.estimate_affine_shape',
+      '1',
+      '--SiftExtraction.domain_size_pooling',
+      '1',
     ]);
     await run('colmap', [
       'exhaustive_matcher',
@@ -176,6 +251,8 @@ export const runPhotogrammetryPipeline = async ({
       '1',
       '--FeatureMatching.use_gpu',
       '0',
+      '--SiftMatching.guided_matching',
+      '1',
     ]);
     await run('colmap', [
       'mapper',
@@ -185,6 +262,10 @@ export const runPhotogrammetryPipeline = async ({
       normalizedDir,
       '--output_path',
       sparseDir,
+      '--Mapper.ba_refine_focal_length',
+      '1',
+      '--Mapper.ba_refine_extra_params',
+      '1',
     ]);
     await run('colmap', [
       'image_undistorter',
@@ -202,11 +283,23 @@ export const runPhotogrammetryPipeline = async ({
     if (openMvsReady) {
       const mvsFile = path.join(mvsDir, 'scene.mvs');
       await run('InterfaceCOLMAP', ['-i', denseDir, '-o', mvsFile]);
-      await run('DensifyPointCloud', [mvsFile, '--resolution-level', '1']);
+      await run('DensifyPointCloud', [
+        mvsFile,
+        '--resolution-level',
+        '0',
+        '--max-resolution',
+        '2048',
+      ]);
       const denseMvs = path.join(mvsDir, 'scene_dense.mvs');
       await run('ReconstructMesh', [denseMvs]);
       const meshMvs = path.join(mvsDir, 'scene_dense_mesh.mvs');
-      await run('TextureMesh', [meshMvs]);
+      await run('TextureMesh', [
+        meshMvs,
+        '--export-type',
+        'obj',
+        '--cost-smoothness-ratio',
+        '1',
+      ]);
       meshInputPath = path.join(mvsDir, 'scene_dense_mesh_texture.obj');
     } else {
       const patchMatch = await runSafe('colmap', [
@@ -263,7 +356,15 @@ if path.lower().endswith('.obj'):
     bpy.ops.import_scene.obj(filepath=path)
 else:
     bpy.ops.wm.ply_import(filepath=path)
-bpy.ops.export_scene.gltf(filepath=r"${glbPath}", export_format='GLB')
+
+# Aplicar smooth shading a todos los objetos
+for obj in bpy.context.scene.objects:
+    if obj.type == 'MESH':
+        bpy.context.view_layer.objects.active = obj
+        bpy.ops.object.shade_smooth()
+
+# Exportar con materiales
+bpy.ops.export_scene.gltf(filepath=r"${glbPath}", export_format='GLB', export_materials='EXPORT')
 `;
     await run('blender', ['--background', '--python-expr', blenderScript]);
 
