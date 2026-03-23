@@ -3,19 +3,10 @@ import { createClient } from '@supabase/supabase-js';
 
 export const prerender = false;
 
-interface ReservePayload {
-  tableId?: string;
-  restaurantId?: string;
-  date?: string;
-  time?: string;
-  people?: number;
-  clientId?: string;
-}
-
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const serviceRoleKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
 
-export const POST: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ url }) => {
   try {
     if (!supabaseUrl || !serviceRoleKey) {
       return new Response(
@@ -28,14 +19,16 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const body = (await request.json()) as ReservePayload;
-    const { tableId, restaurantId, date, time, people = 2, clientId } = body;
+    const tableNameOrId = url.searchParams.get('tableId');
+    const restaurantId = url.searchParams.get('restaurantId');
+    const date = url.searchParams.get('date');
+    const time = url.searchParams.get('time');
 
-    if (!tableId || !date || !time) {
+    if (!tableNameOrId || !restaurantId || !date || !time) {
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'tableId, date and time are required',
+          error: 'tableId, restaurantId, date and time are required',
         }),
         { status: 400 }
       );
@@ -51,14 +44,11 @@ export const POST: APIRoute = async ({ request }) => {
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    let tableQuery = supabase
+    const { data: table, error: tableError } = await supabase
       .from('tables')
-      .select('id, restaurant_id, name')
-      .or(`name.eq.${tableId},id.eq.${tableId}`);
-    if (restaurantId) {
-      tableQuery = tableQuery.eq('restaurant_id', restaurantId);
-    }
-    const { data: table, error: tableError } = await tableQuery
+      .select('id')
+      .eq('restaurant_id', restaurantId)
+      .or(`name.eq.${tableNameOrId},id.eq.${tableNameOrId}`)
       .limit(1)
       .maybeSingle();
 
@@ -91,47 +81,11 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    if (existing) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Table is already reserved for that date/time',
-        }),
-        { status: 409 }
-      );
-    }
-
-    const payload: Record<string, unknown> = {
-      table_id: table.id,
-      restaurant_id: table.restaurant_id,
-      reservation_date: reservationDate.toISOString(),
-      date,
-      time,
-      people,
-      status: 'pending',
-    };
-
-    if (clientId) {
-      payload.client_id = clientId;
-    }
-
-    const { data: inserted, error: insertError } = await supabase
-      .from('reservations')
-      .insert(payload)
-      .select('id, table_id, reservation_date, date, time, status')
-      .single();
-
-    if (insertError) {
-      return new Response(
-        JSON.stringify({ success: false, error: insertError.message }),
-        { status: 500 }
-      );
-    }
-
+    const available = !existing;
     return new Response(
       JSON.stringify({
         success: true,
-        reservation: inserted,
+        available,
       }),
       { status: 200 }
     );
