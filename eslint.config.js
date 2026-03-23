@@ -7,7 +7,13 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default [
   {
-    ignores: ['dist/**', '.astro/**', 'node_modules/**', '*.config.js'],
+    ignores: [
+      'dist/**',
+      '.astro/**',
+      'node_modules/**',
+      '*.config.js',
+      '.vercel/**',
+    ],
   },
   {
     files: ['supabase/**/*.mjs'],
