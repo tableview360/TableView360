@@ -38,9 +38,10 @@ export const POST: APIRoute = async ({ request }) => {
     .single();
 
   const role = profile?.role ?? 'client';
-  let redirectTo = '/restaurantes';
+  let redirectTo = '/';
   if (role === 'admin') redirectTo = '/cms';
   else if (role === 'restaurant') redirectTo = '/dashboard';
+  else if (role === 'client') redirectTo = '/';
 
   headers.set('Content-Type', 'application/json');
   return new Response(JSON.stringify({ user: data.user, role, redirectTo }), {

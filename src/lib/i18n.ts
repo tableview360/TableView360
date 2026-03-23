@@ -69,6 +69,78 @@ const translations: Record<LangCode, Record<string, string>> = {
     'reservation.only_clients':
       'Las reservas están disponibles solo para clientes registrados.',
     'reservation.photos': 'Fotos',
+    // Nav extras
+    'nav.profile': 'Mi Perfil',
+    'nav.my_reservations': 'Mis Reservas',
+    'nav.user_fallback': 'Usuario',
+    // Profile page
+    'profile.title': 'Mi Perfil',
+    'profile.subtitle': 'Gestiona tu información personal y acceso',
+    'profile.photo': 'Foto de perfil',
+    'profile.change_photo': 'Cambiar foto',
+    'profile.photo_hint': 'JPG, PNG, WebP · máx. 3 MB',
+    'profile.photo_size_error': 'La imagen no puede superar los 3 MB.',
+    'profile.photo_type_error': 'Solo se permiten imágenes.',
+    'profile.personal_info': 'Información personal',
+    'profile.email_readonly': 'El email no se puede cambiar.',
+    'profile.update_success': 'Perfil actualizado correctamente.',
+    'profile.save': 'Guardar cambios',
+    'profile.saving': 'Guardando...',
+    'profile.change_password': 'Cambiar contraseña',
+    'profile.new_password': 'Nueva contraseña',
+    'profile.confirm_password': 'Confirmar contraseña',
+    'profile.password_placeholder': 'Mínimo 6 caracteres',
+    'profile.repeat_password': 'Repite la contraseña',
+    'profile.password_min_error':
+      'La contraseña debe tener al menos 6 caracteres.',
+    'profile.password_mismatch': 'Las contraseñas no coinciden.',
+    'profile.password_success': 'Contraseña actualizada correctamente.',
+    'profile.updating': 'Actualizando...',
+    'profile.update_password': 'Cambiar contraseña',
+    // My reservations page
+    'my_reservations.title': 'Mis Reservas',
+    'my_reservations.subtitle': 'Historial de todas tus reservas',
+    'my_reservations.new': '+ Nueva reserva',
+    'my_reservations.unknown_restaurant': 'Restaurante desconocido',
+    'my_reservations.confirmed': 'Confirmada',
+    'my_reservations.cancelled': 'Cancelada',
+    'my_reservations.pending': 'Pendiente',
+    'my_reservations.view': 'Ver restaurante →',
+    'my_reservations.edit': '✏️ Editar',
+    'my_reservations.edit_title': 'Editar reserva',
+    'my_reservations.people': 'Personas',
+    'my_reservations.cancel': 'Cancelar',
+    'my_reservations.save': 'Guardar cambios',
+    'my_reservations.saving': 'Guardando...',
+    'my_reservations.empty': 'No tienes reservas todavía',
+    'my_reservations.empty_hint':
+      'Explora los restaurantes y haz tu primera reserva',
+    'my_reservations.explore': 'Ver restaurantes',
+    // Home sections
+    'home.restaurants_title': 'Restaurantes',
+    'home.restaurants_subtitle': 'Descubre dónde reservar hoy',
+    'home.popular_tab': '🔥 Populares',
+    'home.nearby_tab': '📍 Cerca de ti',
+    'home.no_restaurants': 'No hay restaurantes disponibles aún.',
+    'home.detecting_location': 'Detectando tu ubicación...',
+    'home.location_denied':
+      'Permiso de ubicación denegado. Actívalo en tu navegador.',
+    'home.city_not_found': 'No se pudo detectar tu ciudad.',
+    'home.location_error': 'Error al obtener la ubicación.',
+    'home.no_nearby': 'No encontramos restaurantes en tu ciudad todavía.',
+    'home.showing_nearby': 'Mostrando restaurantes en',
+    'home.reservations_label': 'reservas',
+    'home.view_all': 'Ver todos los restaurantes →',
+    'home.recent_title': 'Mis últimas reservas',
+    'home.recent_subtitle': 'Resumen de tu actividad reciente',
+    'home.see_all': 'Ver todas →',
+    'home.no_recent': 'Aún no tienes reservas.',
+    'home.explore': 'Explorar restaurantes →',
+    'home.restaurant_fallback': 'Restaurante',
+    // Common
+    'common.cancel': 'Cancelar',
+    'common.save': 'Guardar',
+    'common.saving': 'Guardando...',
   },
   en: {
     // Nav
@@ -133,6 +205,77 @@ const translations: Record<LangCode, Record<string, string>> = {
     'reservation.only_clients':
       'Reservations are only available for registered clients.',
     'reservation.photos': 'Photos',
+    // Nav extras
+    'nav.profile': 'My Profile',
+    'nav.my_reservations': 'My Reservations',
+    'nav.user_fallback': 'User',
+    // Profile page
+    'profile.title': 'My Profile',
+    'profile.subtitle': 'Manage your personal information and access',
+    'profile.photo': 'Profile photo',
+    'profile.change_photo': 'Change photo',
+    'profile.photo_hint': 'JPG, PNG, WebP · max 3 MB',
+    'profile.photo_size_error': 'Image cannot exceed 3 MB.',
+    'profile.photo_type_error': 'Only images are allowed.',
+    'profile.personal_info': 'Personal information',
+    'profile.email_readonly': 'Email cannot be changed.',
+    'profile.update_success': 'Profile updated successfully.',
+    'profile.save': 'Save changes',
+    'profile.saving': 'Saving...',
+    'profile.change_password': 'Change password',
+    'profile.new_password': 'New password',
+    'profile.confirm_password': 'Confirm password',
+    'profile.password_placeholder': 'Minimum 6 characters',
+    'profile.repeat_password': 'Repeat password',
+    'profile.password_min_error': 'Password must be at least 6 characters.',
+    'profile.password_mismatch': 'Passwords do not match.',
+    'profile.password_success': 'Password updated successfully.',
+    'profile.updating': 'Updating...',
+    'profile.update_password': 'Change password',
+    // My reservations page
+    'my_reservations.title': 'My Reservations',
+    'my_reservations.subtitle': 'History of all your reservations',
+    'my_reservations.new': '+ New reservation',
+    'my_reservations.unknown_restaurant': 'Unknown restaurant',
+    'my_reservations.confirmed': 'Confirmed',
+    'my_reservations.cancelled': 'Cancelled',
+    'my_reservations.pending': 'Pending',
+    'my_reservations.view': 'View restaurant →',
+    'my_reservations.edit': '✏️ Edit',
+    'my_reservations.edit_title': 'Edit reservation',
+    'my_reservations.people': 'People',
+    'my_reservations.cancel': 'Cancel',
+    'my_reservations.save': 'Save changes',
+    'my_reservations.saving': 'Saving...',
+    'my_reservations.empty': 'You have no reservations yet',
+    'my_reservations.empty_hint':
+      'Explore restaurants and make your first reservation',
+    'my_reservations.explore': 'View restaurants',
+    // Home sections
+    'home.restaurants_title': 'Restaurants',
+    'home.restaurants_subtitle': 'Discover where to book today',
+    'home.popular_tab': '🔥 Popular',
+    'home.nearby_tab': '📍 Near me',
+    'home.no_restaurants': 'No restaurants available yet.',
+    'home.detecting_location': 'Detecting your location...',
+    'home.location_denied':
+      'Location permission denied. Enable it in your browser.',
+    'home.city_not_found': 'Could not detect your city.',
+    'home.location_error': 'Error getting your location.',
+    'home.no_nearby': 'No restaurants found in your city yet.',
+    'home.showing_nearby': 'Showing restaurants in',
+    'home.reservations_label': 'reservations',
+    'home.view_all': 'View all restaurants →',
+    'home.recent_title': 'My recent reservations',
+    'home.recent_subtitle': 'Summary of your recent activity',
+    'home.see_all': 'See all →',
+    'home.no_recent': 'You have no reservations yet.',
+    'home.explore': 'Explore restaurants →',
+    'home.restaurant_fallback': 'Restaurant',
+    // Common
+    'common.cancel': 'Cancel',
+    'common.save': 'Save',
+    'common.saving': 'Saving...',
   },
 };
 
@@ -143,12 +286,12 @@ export function t(key: string, lang: LangCode): string {
 /** Get the lang-prefixed version of a path */
 export function localePath(path: string, lang: LangCode): string {
   const clean = path.replace(/^\/(es|en)(\/|$)/, '/');
-  if (lang === 'en') return clean || '/';
-  return `/${lang}${clean === '/' ? '' : clean}`;
+  if (lang === 'en') return clean || '/'; // English = no prefix (default)
+  return `/es${clean === '/' ? '' : clean}`; // Spanish = /es/...
 }
 
 /** Extract lang from a URL path */
 export function langFromPath(path: string): LangCode {
   if (path.startsWith('/es/') || path === '/es') return 'es';
-  return 'en';
+  return 'en'; // Default is English
 }

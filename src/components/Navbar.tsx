@@ -5,17 +5,33 @@ interface Props {
   user: boolean;
   role: string | null;
   lang: LangCode;
+  username?: string | null;
+  avatarUrl?: string | null;
 }
 
-export default function Navbar({ user, role, lang }: Props) {
+export default function Navbar({
+  user,
+  role,
+  lang,
+  username,
+  avatarUrl,
+}: Props) {
   const [langOpen, setLangOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (langRef.current && !langRef.current.contains(e.target as Node)) {
         setLangOpen(false);
+      }
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(e.target as Node)
+      ) {
+        setUserMenuOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClick);
@@ -27,8 +43,10 @@ export default function Navbar({ user, role, lang }: Props) {
     window.location.href = '/';
   }
 
+  const initial = username?.[0]?.toUpperCase() || 'U';
   const currentLangObj = languages.find((l) => l.code === lang) || languages[0];
 
+  // Only role-based nav links (no user section here — handled separately)
   const navLinks = (mobile: boolean) => {
     const cls = mobile
       ? 'text-slate-300 no-underline py-3 text-base font-medium border-b border-slate-700/30'
@@ -85,18 +103,6 @@ export default function Navbar({ user, role, lang }: Props) {
             </a>
           </>
         )}
-        {user && (
-          <button
-            onClick={handleLogout}
-            className={
-              mobile
-                ? 'text-slate-400 py-3 text-base font-medium text-left'
-                : 'rounded-lg bg-slate-800 px-4 py-1.5 text-[0.95rem] font-medium text-slate-300 transition hover:bg-slate-700'
-            }
-          >
-            {t('nav.logout', lang)}
-          </button>
-        )}
       </>
     );
   };
@@ -129,6 +135,76 @@ export default function Navbar({ user, role, lang }: Props) {
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-6">
           {navLinks(false)}
+
+          {/* Desktop user dropdown */}
+          {user && (
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex items-center gap-2 bg-transparent border-none cursor-pointer text-slate-300 hover:text-slate-50 transition-colors"
+              >
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={username || 'U'}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-sm font-semibold">
+                    {initial}
+                  </div>
+                )}
+                <span className="text-[0.95rem] font-medium">
+                  {username || t('nav.user_fallback', lang)}
+                </span>
+                <svg
+                  className={`w-4 h-4 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-52 bg-slate-800 border border-slate-700/50 rounded-xl shadow-2xl overflow-hidden z-[1001]">
+                  <div className="px-4 py-3 border-b border-slate-700/50">
+                    <p className="text-sm font-semibold text-slate-100 truncate">
+                      {username || 'Usuario'}
+                    </p>
+                  </div>
+                  <a
+                    href={localePath('/profile', lang)}
+                    className="flex items-center gap-2 px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-slate-50 transition-colors no-underline"
+                    onClick={() => setUserMenuOpen(false)}
+                  >
+                    <span>👤</span> {t('nav.profile', lang)}
+                  </a>
+                  <a
+                    href={localePath('/mis-reservas', lang)}
+                    className="flex items-center gap-2 px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-slate-50 transition-colors no-underline"
+                    onClick={() => setUserMenuOpen(false)}
+                  >
+                    <span>📅</span> {t('nav.my_reservations', lang)}
+                  </a>
+                  <div className="border-t border-slate-700/50">
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 w-full px-4 py-3 text-sm text-red-400 hover:bg-slate-700 hover:text-red-300 transition-colors bg-transparent border-none cursor-pointer text-left"
+                    >
+                      <span>🚪</span> {t('nav.logout', lang)}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Language selector */}
           <div ref={langRef} className="relative">
@@ -214,6 +290,48 @@ export default function Navbar({ user, role, lang }: Props) {
       {menuOpen && (
         <div className="md:hidden absolute left-0 right-0 top-full border-b border-slate-700/50 bg-slate-900/95 backdrop-blur-xl px-6 py-4 flex flex-col gap-1 z-50">
           {navLinks(true)}
+
+          {/* Mobile user section */}
+          {user && (
+            <>
+              <div className="flex items-center gap-3 py-3 border-b border-slate-700/30">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={username || 'U'}
+                    className="w-9 h-9 rounded-full object-cover flex-shrink-0"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
+                    {initial}
+                  </div>
+                )}
+                <span className="text-base font-medium text-slate-200 truncate">
+                  {username || t('nav.user_fallback', lang)}
+                </span>
+              </div>
+              <a
+                href={localePath('/profile', lang)}
+                className="text-slate-300 no-underline py-3 text-base font-medium border-b border-slate-700/30 hover:text-slate-50 transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                👤 {t('nav.profile', lang)}
+              </a>
+              <a
+                href={localePath('/mis-reservas', lang)}
+                className="text-slate-300 no-underline py-3 text-base font-medium border-b border-slate-700/30 hover:text-slate-50 transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                📅 {t('nav.my_reservations', lang)}
+              </a>
+              <button
+                onClick={handleLogout}
+                className="text-red-400 py-3 text-base font-medium text-left bg-transparent border-none cursor-pointer hover:text-red-300 transition-colors"
+              >
+                🚪 {t('nav.logout', lang)}
+              </button>
+            </>
+          )}
 
           {/* Mobile language selector */}
           <div className="flex items-center gap-3 pt-3 border-t border-slate-700/30 mt-2">

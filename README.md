@@ -70,20 +70,24 @@ supabase/
 ## Roles y Rutas
 
 ### Admin
+
 - **Acceso**: `/cms`, `/cms/restaurantes`, `/cms/clientes`, `/cms/reservas`
 - **Puede**: Ver stats, CRUD de todos los restaurantes, ver todos los clientes, gestionar todas las reservas (confirmar, cancelar, eliminar)
 
 ### Restaurante (owner)
+
 - **Acceso**: `/dashboard`, `/dashboard/mi-restaurante`, `/dashboard/reservas`
 - **Puede**: Ver stats de su restaurante, editar nombre/email/teléfono/dirección/descripción, subir y eliminar fotos, ver y gestionar reservas de su restaurante
 - **No puede**: Acceder al CMS, modificar otros restaurantes
 
 ### Cliente
+
 - **Acceso**: `/restaurantes`, `/restaurantes/[id]`
 - **Puede**: Ver restaurantes, ver detalle con fotos, hacer reservas
 - **No puede**: Acceder al CMS ni al dashboard de restaurante
 
 ### No logueado
+
 - **Acceso**: `/`, `/login`, `/registro`
 - **No puede**: Ver restaurantes — se redirige a `/` con modal de login
 
@@ -97,18 +101,21 @@ supabase/
 ## Base de Datos
 
 ### Tablas
+
 - **profiles** — Extiende auth.users: role, full_name, username, phone
 - **restaurants** — name, email, phone, description, address, city, capacity, cover_image
 - **restaurant_photos** — url, caption, sort_order (Storage: bucket `restaurant-photos`)
 - **reservations** — date, time, guests, status (pending/confirmed/cancelled), notes
 
 ### RLS (Row Level Security)
+
 - Profiles: lectura propia + admin lee todos
 - Restaurants: lectura para autenticados, escritura owner + admin
 - Photos: lectura para autenticados, escritura owner del restaurante + admin
 - Reservations: cliente ve/crea las suyas, restaurant owner ve las de su restaurante, admin ve todas
 
 ### Triggers
+
 - `on_auth_user_created` → crea perfil automáticamente
 - `on_profile_created` → crea restaurante vacío si rol es `restaurant`
 - `set_updated_at` → actualiza timestamp al modificar restaurante
@@ -132,6 +139,9 @@ npx astro check
 node --env-file=.env supabase/seed.mjs
 ```
 
+## Prettier
+npx prettier --write .
+
 ## Setup Inicial
 
 1. Crear proyecto en [Supabase](https://supabase.com)
@@ -147,8 +157,8 @@ node --env-file=.env supabase/seed.mjs
 
 ## Variables de Entorno
 
-| Variable | Descripción |
-|---|---|
-| `PUBLIC_SUPABASE_URL` | URL del proyecto Supabase |
-| `PUBLIC_SUPABASE_ANON_KEY` | Clave pública (anon) |
+| Variable                    | Descripción                          |
+| --------------------------- | ------------------------------------ |
+| `PUBLIC_SUPABASE_URL`       | URL del proyecto Supabase            |
+| `PUBLIC_SUPABASE_ANON_KEY`  | Clave pública (anon)                 |
 | `SUPABASE_SERVICE_ROLE_KEY` | Clave de servicio (solo server-side) |

@@ -1,57 +1,49 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar';
 import { createSupabaseServer } from '../../lib/supabase';
+import { type LangCode } from '../../lib/i18n';
 
-const supabase = createSupabaseServer(Astro.cookies);
+const lang = (Astro.locals.lang || 'en') as LangCode;
+const supabase = createSupabaseServer(Astro.cookies, Astro.request);
 const role = Astro.locals.role;
+const user = Astro.locals.user;
 
-const { data: restaurants } = await supabase
+// Fetch user profile for username display
+let username: string | null = null;
+let avatarUrl: string | null = null;
+if (user) {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('username, full_name, avatar_url')
+    .eq('id', user.id)
+    .maybeSingle();
+  username = profile?.username || profile?.full_name || null;
+  avatarUrl = profile?.avatar_url ?? null;
+}
+
+const { data: restaurants, error: restaurantsError } = await supabase
   .from('restaurants')
-  .select('id, name, description, city, cover_image, phone')
+  .select('id, name, slug, description, address, logo_url, phone')
   .order('created_at', { ascending: false });
+
+if (restaurantsError) {
+  console.error('[restaurantes] query error:', restaurantsError.message);
+}
 ---
 
 <Layout title="Restaurantes - TableView360">
   <div class="min-h-screen">
-    <!-- Navbar -->
-    <nav class="border-b border-slate-700/50 bg-slate-800/90 px-6 py-4">
-      <div class="mx-auto flex max-w-7xl items-center justify-between">
-        <a href="/" class="text-xl font-bold text-slate-100">TableView360</a>
-        <div class="flex items-center gap-4">
-          {
-            role === 'admin' && (
-              <a
-                href="/cms"
-                class="text-sm font-medium text-slate-400 hover:text-slate-100"
-              >
-                CMS Admin
-              </a>
-            )
-          }
-          {
-            role === 'restaurant' && (
-              <a
-                href="/dashboard"
-                class="text-sm font-medium text-slate-400 hover:text-slate-100"
-              >
-                Mi Panel
-              </a>
-            )
-          }
-          <a href="/restaurantes" class="text-sm font-medium text-violet-400"
-            >Restaurantes</a
-          >
-          <button
-            id="logout-btn"
-            class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-600"
-          >
-            Cerrar Sesión
-          </button>
-        </div>
-      </div>
-    </nav>
+    <Navbar
+      client:load
+      user={!!user}
+      role={role}
+      lang={lang}
+      username={username}
+      avatarUrl={avatarUrl}
+    />
 
-    <main class="mx-auto max-w-7xl px-6 py-10">
+    <main class="mx-auto max-w-7xl px-6 pt-24 pb-10">
       <h1 class="text-3xl font-bold text-slate-100">Restaurantes</h1>
       <p class="mt-2 text-slate-500">
         Explora y reserva en los mejores restaurantes
@@ -66,9 +58,9 @@ const { data: restaurants } = await supabase
                 class="group block overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-800/90 shadow-sm transition hover:shadow-xl"
               >
                 <div class="aspect-video bg-slate-800">
-                  {r.cover_image ? (
+                  {r.logo_url ? (
                     <img
-                      src={r.cover_image}
+                      src={r.logo_url}
                       alt={r.name}
                       class="h-full w-full object-cover transition group-hover:scale-105"
                     />
@@ -82,8 +74,8 @@ const { data: restaurants } = await supabase
                   <h3 class="text-lg font-semibold text-slate-100 group-hover:text-violet-400">
                     {r.name}
                   </h3>
-                  {r.city && (
-                    <p class="mt-1 text-sm text-slate-500">📍 {r.city}</p>
+                  {r.address && (
+                    <p class="mt-1 text-sm text-slate-500">📍 {r.address}</p>
                   )}
                   {r.description && (
                     <p class="mt-2 line-clamp-2 text-sm text-slate-400">
@@ -103,13 +95,4 @@ const { data: restaurants } = await supabase
       }
     </main>
   </div>
-
-  <script>
-    document
-      .getElementById('logout-btn')
-      ?.addEventListener('click', async () => {
-        await fetch('/api/auth/logout', { method: 'POST' });
-        window.location.href = '/';
-      });
-  </script>
 </Layout>

@@ -1,0 +1,68 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar';
+import MisReservasList from '../components/MisReservasList';
+import { createSupabaseServer } from '../lib/supabase';
+import { t, type LangCode } from '../lib/i18n';
+
+const lang = (Astro.locals.lang || 'en') as LangCode;
+const supabase = createSupabaseServer(Astro.cookies, Astro.request);
+const user = Astro.locals.user;
+
+const { data: profile } = await supabase
+  .from('profiles')
+  .select('username, full_name, avatar_url')
+  .eq('id', user.id)
+  .maybeSingle();
+
+const username = profile?.username || profile?.full_name || null;
+const avatarUrl = profile?.avatar_url ?? null;
+
+const { data: reservations, error } = await supabase
+  .from('reservations')
+  .select(
+    'id, reservation_date, date, time, people, status, restaurants(id, name)'
+  )
+  .eq('client_id', user.id)
+  .order('reservation_date', { ascending: false });
+
+if (error) {
+  console.error('[mis-reservas] query error:', error.message);
+}
+
+const list = reservations ?? [];
+---
+
+<Layout title="Mis Reservas - TableView360">
+  <div class="min-h-screen">
+    <Navbar
+      client:load
+      user={true}
+      role={Astro.locals.role}
+      lang={lang}
+      username={username}
+      avatarUrl={avatarUrl}
+    />
+
+    <main class="mx-auto max-w-4xl px-6 pt-24 pb-12">
+      <div class="mb-8 flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-100">
+            {t('my_reservations.title', lang)}
+          </h1>
+          <p class="mt-1 text-slate-400">
+            {t('my_reservations.subtitle', lang)}
+          </p>
+        </div>
+        <a
+          href="/restaurantes"
+          class="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-500"
+        >
+          {t('my_reservations.new', lang)}
+        </a>
+      </div>
+
+      <MisReservasList client:load initialReservations={list} lang={lang} />
+    </main>
+  </div>
+</Layout>

@@ -40,10 +40,10 @@ export default function ReservationForm({
         .insert({
           restaurant_id: restaurantId,
           client_id: user.id,
+          reservation_date: `${date}T${time}:00`,
           date,
           time,
-          guests,
-          notes: notes || null,
+          people: guests,
         });
 
       if (insertError) {
