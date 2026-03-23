@@ -1,5 +1,21 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
+import react from '@astrojs/react';
+import tailwindcss from '@tailwindcss/vite';
+
 // https://astro.build/config
-export default defineConfig({});
+export default defineConfig({
+  output: 'server',
+  integrations: [react()],
+
+  vite: {
+    plugins: [tailwindcss()],
+    ssr: {
+      noExternal: ['@supabase/supabase-js', '@supabase/ssr'],
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime'],
+    },
+  }
+});

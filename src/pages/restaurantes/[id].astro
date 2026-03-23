@@ -1,0 +1,110 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ReservationForm from '../../components/ReservationForm';
+import { createSupabaseServer } from '../../lib/supabase';
+
+const { id } = Astro.params;
+const supabase = createSupabaseServer(Astro.cookies);
+const role = (Astro.locals as any).role;
+
+const { data: restaurant } = await supabase
+  .from('restaurants')
+  .select('*')
+  .eq('id', id)
+  .single();
+
+if (!restaurant) {
+  return Astro.redirect('/restaurantes');
+}
+
+const { data: photos } = await supabase
+  .from('restaurant_photos')
+  .select('*')
+  .eq('restaurant_id', id)
+  .order('sort_order');
+---
+
+<Layout title={`${restaurant.name} - TableView360`}>
+  <div class="min-h-screen">
+    <!-- Navbar -->
+    <nav class="border-b border-slate-700/50 bg-slate-800/90 px-6 py-4">
+      <div class="mx-auto flex max-w-7xl items-center justify-between">
+        <a href="/" class="text-xl font-bold text-slate-100">TableView360</a>
+        <div class="flex items-center gap-4">
+          <a href="/restaurantes" class="text-sm font-medium text-slate-400 hover:text-slate-100">&larr; Restaurantes</a>
+          <button
+            id="logout-btn"
+            class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-300 transition hover:bg-slate-600"
+          >
+            Cerrar Sesión
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="mx-auto max-w-7xl px-6 py-10">
+      <!-- Cover -->
+      <div class="aspect-[3/1] overflow-hidden rounded-2xl bg-slate-800">
+        {restaurant.cover_image ? (
+          <img src={restaurant.cover_image} alt={restaurant.name} class="h-full w-full object-cover" />
+        ) : (
+          <div class="flex h-full items-center justify-center text-6xl text-slate-500">🍽️</div>
+        )}
+      </div>
+
+      <div class="mt-8 grid gap-8 lg:grid-cols-3">
+        <!-- Info -->
+        <div class="lg:col-span-2">
+          <h1 class="text-3xl font-bold text-slate-100">{restaurant.name}</h1>
+
+          <div class="mt-4 flex flex-wrap gap-4 text-sm text-slate-500">
+            {restaurant.city && <span>📍 {restaurant.city}</span>}
+            {restaurant.address && <span>🏠 {restaurant.address}</span>}
+            {restaurant.phone && <span>📞 {restaurant.phone}</span>}
+            {restaurant.email && <span>✉️ {restaurant.email}</span>}
+          </div>
+
+          {restaurant.description && (
+            <p class="mt-6 text-slate-400 leading-relaxed">{restaurant.description}</p>
+          )}
+
+          <!-- Photos gallery -->
+          {photos && photos.length > 0 && (
+            <div class="mt-8">
+              <h2 class="text-xl font-semibold text-slate-100 mb-4">Fotos</h2>
+              <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {photos.map((photo) => (
+                  <div class="aspect-square overflow-hidden rounded-xl bg-slate-800">
+                    <img src={photo.url} alt={photo.caption || restaurant.name} class="h-full w-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <!-- Reservation sidebar (only for clients) -->
+        <div>
+          {role === 'client' ? (
+            <ReservationForm
+              client:load
+              restaurantId={restaurant.id}
+              restaurantName={restaurant.name}
+            />
+          ) : (
+            <div class="rounded-2xl border border-slate-700/50 bg-slate-900 p-6 text-center text-sm text-slate-500">
+              Las reservas están disponibles solo para clientes registrados.
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.getElementById('logout-btn')?.addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      window.location.href = '/';
+    });
+  </script>
+</Layout>
