@@ -1,0 +1,54 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar';
+import ProfileSettings from '../components/ProfileSettings';
+import { createSupabaseServer } from '../lib/supabase';
+import { t, type LangCode } from '../lib/i18n';
+
+const lang = (Astro.locals.lang || 'en') as LangCode;
+const supabase = createSupabaseServer(Astro.cookies, Astro.request);
+const user = Astro.locals.user;
+
+const { data: profile } = await supabase
+  .from('profiles')
+  .select('username, full_name, phone, avatar_url')
+  .eq('id', user.id)
+  .maybeSingle();
+
+const username = profile?.username || profile?.full_name || null;
+const avatarUrl = profile?.avatar_url ?? null;
+---
+
+<Layout title="Mi Perfil - TableView360">
+  <div class="min-h-screen">
+    <Navbar
+      client:load
+      user={true}
+      role={Astro.locals.role}
+      lang={lang}
+      username={username}
+      avatarUrl={avatarUrl}
+    />
+
+    <main class="mx-auto max-w-2xl px-6 pt-24 pb-12">
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-slate-100">
+          {t('profile.title', lang)}
+        </h1>
+        <p class="mt-1 text-slate-400">{t('profile.subtitle', lang)}</p>
+      </div>
+
+      <ProfileSettings
+        client:load
+        userId={user.id}
+        role={Astro.locals.role ?? null}
+        initialUsername={profile?.username ?? null}
+        initialFullName={profile?.full_name ?? null}
+        initialPhone={profile?.phone ?? null}
+        initialAvatarUrl={avatarUrl}
+        email={user.email ?? null}
+        lang={lang}
+      />
+    </main>
+  </div>
+</Layout>

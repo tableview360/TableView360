@@ -12,7 +12,7 @@ interface ReservationRow {
   profiles: { full_name: string } | null;
 }
 
-const supabase = createSupabaseServer(Astro.cookies);
+const supabase = createSupabaseServer(Astro.cookies, Astro.request);
 
 // Get counts
 const { count: restaurantCount } = await supabase

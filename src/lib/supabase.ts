@@ -13,11 +13,11 @@ export function createSupabaseBrowser() {
   return createBrowserClient(supabaseUrl, supabaseAnonKey);
 }
 
-export function createSupabaseServer(cookies: AstroCookies) {
+export function createSupabaseServer(cookies: AstroCookies, request: Request) {
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
-        return parseCookieHeader(cookies.get('sb-auth')?.value ?? '') as {
+        return parseCookieHeader(request.headers.get('Cookie') ?? '') as {
           name: string;
           value: string;
         }[];

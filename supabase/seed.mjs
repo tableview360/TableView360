@@ -4,7 +4,9 @@ const SUPABASE_URL = process.env.PUBLIC_SUPABASE_URL;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
-  console.error('Missing env vars. Run with:\n  node --env-file=.env supabase/seed.mjs');
+  console.error(
+    'Missing env vars. Run with:\n  node --env-file=.env supabase/seed.mjs'
+  );
   process.exit(1);
 }
 
@@ -89,7 +91,9 @@ async function seed() {
 
   // Get restaurant owner ID
   const { data: list } = await supabase.auth.admin.listUsers();
-  const restaurantUser = list?.users?.find((x) => x.email === 'restaurant@tableview360.com');
+  const restaurantUser = list?.users?.find(
+    (x) => x.email === 'restaurant@tableview360.com'
+  );
 
   if (restaurantUser) {
     // Check if restaurant already exists
@@ -101,19 +105,25 @@ async function seed() {
 
     if (existing) {
       // Update the auto-created restaurant
-      await supabase.from('restaurants').update({
-        name: 'La Terraza de Carlos',
-        email: 'info@laterrazadecarlos.com',
-        phone: '+34 912 345 678',
-        description: 'Cocina mediterránea con vistas panorámicas al mar. Ingredientes frescos de temporada y una carta de vinos selecta.',
-        address: 'Calle Mayor 42, Planta 8',
-        city: 'Barcelona',
-        capacity: 60,
-      }).eq('id', existing.id);
+      await supabase
+        .from('restaurants')
+        .update({
+          name: 'La Terraza de Carlos',
+          email: 'info@laterrazadecarlos.com',
+          phone: '+34 912 345 678',
+          description:
+            'Cocina mediterránea con vistas panorámicas al mar. Ingredientes frescos de temporada y una carta de vinos selecta.',
+          address: 'Calle Mayor 42, Planta 8',
+          city: 'Barcelona',
+          capacity: 60,
+        })
+        .eq('id', existing.id);
       console.log(`\n🍽️  Updated restaurant: La Terraza de Carlos`);
 
       // Add sample reservations
-      const clientUser = list?.users?.find((x) => x.email === 'client@tableview360.com');
+      const clientUser = list?.users?.find(
+        (x) => x.email === 'client@tableview360.com'
+      );
       if (clientUser) {
         const today = new Date();
         const in2days = new Date(today);
@@ -121,26 +131,29 @@ async function seed() {
         const in5days = new Date(today);
         in5days.setDate(today.getDate() + 5);
 
-        await supabase.from('reservations').upsert([
-          {
-            restaurant_id: existing.id,
-            client_id: clientUser.id,
-            date: in2days.toISOString().split('T')[0],
-            time: '20:00',
-            guests: 4,
-            status: 'pending',
-            notes: 'Mesa con vistas si es posible',
-          },
-          {
-            restaurant_id: existing.id,
-            client_id: clientUser.id,
-            date: in5days.toISOString().split('T')[0],
-            time: '14:00',
-            guests: 2,
-            status: 'confirmed',
-            notes: 'Cumpleaños, traer tarta',
-          },
-        ], { onConflict: 'id' });
+        await supabase.from('reservations').upsert(
+          [
+            {
+              restaurant_id: existing.id,
+              client_id: clientUser.id,
+              date: in2days.toISOString().split('T')[0],
+              time: '20:00',
+              guests: 4,
+              status: 'pending',
+              notes: 'Mesa con vistas si es posible',
+            },
+            {
+              restaurant_id: existing.id,
+              client_id: clientUser.id,
+              date: in5days.toISOString().split('T')[0],
+              time: '14:00',
+              guests: 2,
+              status: 'confirmed',
+              notes: 'Cumpleaños, traer tarta',
+            },
+          ],
+          { onConflict: 'id' }
+        );
         console.log(`📅 Added 2 sample reservations`);
       }
     }

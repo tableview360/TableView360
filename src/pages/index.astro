@@ -2,35 +2,50 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar';
 import LoginModal from '../components/LoginModal';
+import PopularRestaurants from '../components/home/PopularRestaurants';
+import RecentReservations from '../components/home/RecentReservations';
 import { createSupabaseServer } from '../lib/supabase';
 import { t, localePath, type LangCode } from '../lib/i18n';
 
 const lang = (Astro.locals.lang || 'en') as LangCode;
-const supabase = createSupabaseServer(Astro.cookies);
+const supabase = createSupabaseServer(Astro.cookies, Astro.request);
 const {
   data: { user },
 } = await supabase.auth.getUser();
 
 let role = null;
+let username: string | null = null;
+let avatarUrl: string | null = null;
 if (user) {
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
+    .select('role, username, full_name, avatar_url')
     .eq('id', user.id)
     .single();
-  role = profile?.role;
+  role = profile?.role ?? null;
+  username = profile?.username || profile?.full_name || null;
+  avatarUrl = profile?.avatar_url ?? null;
 }
 
 const showLogin = Astro.url.searchParams.get('login') === 'true' && !user;
 ---
 
 <Layout title="TableView360">
-  <div class="flex min-h-screen flex-col">
-    <Navbar client:load user={!!user} role={role} lang={lang} />
+  <div class="min-h-screen flex flex-col">
+    <Navbar
+      client:load
+      user={!!user}
+      role={role}
+      lang={lang}
+      username={username}
+      avatarUrl={avatarUrl}
+    />
 
     <!-- Hero -->
-    <main class="flex flex-1 items-center justify-center px-6">
-      <div class="text-center">
+    <section
+      class="flex items-center justify-center px-6 pt-32 pb-16 text-center"
+    >
+      <div>
         <h1 class="text-5xl font-bold tracking-tight text-slate-50">
           {t('hero.title1', lang)}<br />
           <span
@@ -70,7 +85,17 @@ const showLogin = Astro.url.searchParams.get('login') === 'true' && !user;
           }
         </div>
       </div>
-    </main>
+    </section>
+
+    <!-- Logged-in sections -->
+    {
+      user && (
+        <div class="mx-auto w-full max-w-7xl px-6 pb-16">
+          <PopularRestaurants client:load lang={lang} />
+          <RecentReservations client:load userId={user.id} lang={lang} />
+        </div>
+      )
+    }
   </div>
 
   {showLogin && <LoginModal open={true} client:load />}

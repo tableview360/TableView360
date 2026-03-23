@@ -11,7 +11,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const cookieLang = request.headers
     .get('cookie')
     ?.match(/tv360_lang=(es|en)/)?.[1];
-  let lang: 'en' | 'es' = 'en';
+  let lang: 'en' | 'es' = 'en'; // English is the default
 
   if (path.startsWith('/es/') || path === '/es') {
     lang = 'es';
