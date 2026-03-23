@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unknown-property */
 import { Html, OrbitControls, useGLTF } from '@react-three/drei';
-import { Canvas, useThree } from '@react-three/fiber';
-import { useCallback, useRef, useState } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { useCallback, useState } from 'react';
 import * as THREE from 'three';
 
 export interface TablePosition {

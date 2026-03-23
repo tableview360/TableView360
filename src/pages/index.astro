@@ -1,29 +1,77 @@
 ---
-import '../styles/global.css';
-import App from '../App';
-import SpeedInsights from '@vercel/speed-insights/astro';
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar';
+import LoginModal from '../components/LoginModal';
+import { createSupabaseServer } from '../lib/supabase';
+import { t, localePath, type LangCode } from '../lib/i18n';
+
+const lang = (Astro.locals.lang || 'en') as LangCode;
+const supabase = createSupabaseServer(Astro.cookies);
+const {
+  data: { user },
+} = await supabase.auth.getUser();
+
+let role = null;
+if (user) {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+  role = profile?.role;
+}
+
+const showLogin = Astro.url.searchParams.get('login') === 'true' && !user;
 ---
 
-<!doctype html>
-<html lang="es" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="generator" content={Astro.generator} />
-    <title>TableView360</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body
-    class="font-['Inter',_-apple-system,_BlinkMacSystemFont,_'Segoe_UI',_Roboto,_sans-serif] min-h-screen bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_50%,#0f172a_100%)] text-slate-50 selection:bg-violet-500/30 leading-relaxed selection:text-white"
-  >
-    <SpeedInsights />
-    <App client:only="react" />
-  </body>
-</html>
+<Layout title="TableView360">
+  <div class="flex min-h-screen flex-col">
+    <Navbar client:load user={!!user} role={role} lang={lang} />
+
+    <!-- Hero -->
+    <main class="flex flex-1 items-center justify-center px-6">
+      <div class="text-center">
+        <h1 class="text-5xl font-bold tracking-tight text-slate-50">
+          {t('hero.title1', lang)}<br />
+          <span
+            class="bg-gradient-to-r from-violet-400 via-violet-500 to-indigo-400 bg-clip-text"
+            style="-webkit-text-fill-color:transparent"
+            >{t('hero.title2', lang)}</span
+          >
+        </h1>
+        <p class="mt-6 text-lg text-slate-400 max-w-2xl mx-auto">
+          {t('hero.subtitle', lang)}
+        </p>
+        <div class="mt-10 flex items-center justify-center gap-4">
+          {
+            user ? (
+              <a
+                href={localePath('/restaurantes', lang)}
+                class="rounded-lg bg-violet-600 px-6 py-3 font-medium text-white transition hover:bg-violet-500 shadow-lg shadow-violet-500/20"
+              >
+                {t('hero.cta_restaurants', lang)}
+              </a>
+            ) : (
+              <>
+                <a
+                  href={localePath('/registro', lang)}
+                  class="rounded-lg bg-violet-600 px-6 py-3 font-medium text-white transition hover:bg-violet-500 shadow-lg shadow-violet-500/20"
+                >
+                  {t('hero.cta', lang)}
+                </a>
+                <a
+                  href={localePath('/login', lang)}
+                  class="rounded-lg border border-slate-700 px-6 py-3 font-medium text-slate-300 transition hover:bg-slate-800"
+                >
+                  {t('hero.cta_login', lang)}
+                </a>
+              </>
+            )
+          }
+        </div>
+      </div>
+    </main>
+  </div>
+
+  {showLogin && <LoginModal open={true} client:load />}
+</Layout>

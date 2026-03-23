@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import { useTranslation } from 'react-i18next';
 import { UserIcon, EmailIcon, PhoneIcon } from '../icons';
@@ -23,7 +23,6 @@ const RegisterForm = () => {
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {

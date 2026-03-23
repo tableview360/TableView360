@@ -213,7 +213,7 @@ export const runPhotogrammetryPipeline = async ({
     const validation = await validatePhotos(imagesDir, photoNames);
 
     if (validation.warnings.length > 0) {
-      console.warn('[photogrammetry] Warnings:', validation.warnings);
+      console.warn('[photogrammetry] Warnings:', validation.warnings); // eslint-disable-line no-console
     }
 
     if (!validation.valid) {

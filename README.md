@@ -1,177 +1,154 @@
-# TableView360
-Aplicación Astro + React + Supabase para subir fotos de un restaurante/habitación y generar un `model.glb` automáticamente mediante fotogrametría real.
+# ◈ TableView360
 
-## Qué hace ahora
-- Subes hasta 10 fotos desde la página de detalle del restaurante.
-- Las fotos se guardan en Supabase Storage: `restaurant-uploads/{slug}/originals/*`.
-- El endpoint `POST /api/restaurants/process-model` ejecuta pipeline local:
-  - COLMAP (features + matching + sparse + undistort)
-  - OpenMVS (dense + mesh + texture)
-  - Blender (export final a GLB)
-- El resultado se sube a:
-  - `restaurant-models/{slug}/model.glb`
-- La página del restaurante detecta el `model.glb` y lo renderiza en Three.js.
+CMS y sistema de reservas para restaurantes con roles de usuario, panel de administración, dashboard para restaurantes y sistema de reservas para clientes.
 
-## Requisitos
-### 1) Node
-- Node 18+ recomendado
+## Tech Stack
 
-### 2) Variables de entorno
-En `.env`:
+- **Astro 5** — Framework SSR
+- **React 19** — Componentes interactivos (islands)
+- **Tailwind CSS 4** — Estilos (tema oscuro slate/violet)
+- **Supabase** — Auth, PostgreSQL, Storage, RLS
+- **TypeScript** — Tipado estricto
+
+Todo gratuito (Supabase Free Tier).
+
+## Estructura del Proyecto
+
+```
+src/
+├── components/
+│   ├── Navbar.tsx              # Navbar responsivo + selector idioma + mobile menu
+│   ├── LoginForm.tsx           # Formulario de login
+│   ├── LoginModal.tsx          # Modal de login para no logueados
+│   ├── RegisterForm.tsx        # Registro con campos por rol
+│   ├── ReservationForm.tsx     # Formulario de reserva (cliente)
+│   ├── RestaurantCard.tsx      # Card de restaurante
+│   ├── cms/
+│   │   ├── CmsRestaurants.tsx  # CRUD restaurantes (admin)
+│   │   ├── CmsClients.tsx      # Lista usuarios (admin)
+│   │   └── CmsReservations.tsx # Gestión reservas (admin)
+│   └── dashboard/
+│       ├── RestaurantEditor.tsx # Editar restaurante + subir fotos
+│       └── DashboardReservations.tsx # Reservas del restaurante
+├── layouts/
+│   ├── Layout.astro            # Layout base (dark theme)
+│   ├── CmsLayout.astro         # Layout CMS con sidebar
+│   └── DashboardLayout.astro   # Layout dashboard restaurante
+├── lib/
+│   ├── i18n.ts                 # Sistema de traducciones EN/ES
+│   └── supabase.ts             # Clientes Supabase (server + browser)
+├── middleware.ts               # Auth + i18n (/es/ prefix) + protección rutas
+├── pages/
+│   ├── index.astro             # Landing page
+│   ├── login.astro             # Página de login
+│   ├── registro.astro          # Página de registro
+│   ├── restaurantes/
+│   │   ├── index.astro         # Lista de restaurantes
+│   │   └── [id].astro          # Detalle + reservar
+│   ├── cms/
+│   │   ├── index.astro         # Dashboard admin (stats)
+│   │   ├── restaurantes.astro  # CRUD restaurantes
+│   │   ├── clientes.astro      # Lista usuarios
+│   │   └── reservas.astro      # Gestión reservas
+│   ├── dashboard/
+│   │   ├── index.astro         # Panel restaurante (stats)
+│   │   ├── mi-restaurante.astro# Editar restaurante + fotos
+│   │   └── reservas.astro      # Reservas del restaurante
+│   └── api/auth/
+│       ├── login.ts            # POST /api/auth/login
+│       ├── register.ts         # POST /api/auth/register
+│       └── logout.ts           # POST /api/auth/logout
+└── styles/
+    └── global.css              # Tailwind + Inter font + tema
+
+supabase/
+├── migration.sql               # Tablas, RLS, triggers, storage
+├── seed.mjs                    # Script Node.js para crear usuarios de prueba
+└── seed.sql                    # (alternativo) Seed SQL directo
+```
+
+## Roles y Rutas
+
+### Admin
+- **Acceso**: `/cms`, `/cms/restaurantes`, `/cms/clientes`, `/cms/reservas`
+- **Puede**: Ver stats, CRUD de todos los restaurantes, ver todos los clientes, gestionar todas las reservas (confirmar, cancelar, eliminar)
+
+### Restaurante (owner)
+- **Acceso**: `/dashboard`, `/dashboard/mi-restaurante`, `/dashboard/reservas`
+- **Puede**: Ver stats de su restaurante, editar nombre/email/teléfono/dirección/descripción, subir y eliminar fotos, ver y gestionar reservas de su restaurante
+- **No puede**: Acceder al CMS, modificar otros restaurantes
+
+### Cliente
+- **Acceso**: `/restaurantes`, `/restaurantes/[id]`
+- **Puede**: Ver restaurantes, ver detalle con fotos, hacer reservas
+- **No puede**: Acceder al CMS ni al dashboard de restaurante
+
+### No logueado
+- **Acceso**: `/`, `/login`, `/registro`
+- **No puede**: Ver restaurantes — se redirige a `/` con modal de login
+
+## i18n (Idiomas)
+
+- **Inglés** (default): `/`, `/login`, `/restaurantes`
+- **Español**: `/es/`, `/es/login`, `/es/restaurantes`
+- Selector de idioma en el Navbar (desktop dropdown + mobile)
+- El middleware detecta el prefijo `/es/` y establece el idioma en el servidor
+
+## Base de Datos
+
+### Tablas
+- **profiles** — Extiende auth.users: role, full_name, username, phone
+- **restaurants** — name, email, phone, description, address, city, capacity, cover_image
+- **restaurant_photos** — url, caption, sort_order (Storage: bucket `restaurant-photos`)
+- **reservations** — date, time, guests, status (pending/confirmed/cancelled), notes
+
+### RLS (Row Level Security)
+- Profiles: lectura propia + admin lee todos
+- Restaurants: lectura para autenticados, escritura owner + admin
+- Photos: lectura para autenticados, escritura owner del restaurante + admin
+- Reservations: cliente ve/crea las suyas, restaurant owner ve las de su restaurante, admin ve todas
+
+### Triggers
+- `on_auth_user_created` → crea perfil automáticamente
+- `on_profile_created` → crea restaurante vacío si rol es `restaurant`
+- `set_updated_at` → actualiza timestamp al modificar restaurante
+
+## Comandos
 
 ```bash
-PUBLIC_SUPABASE_URL=https://<tu-project-ref>.supabase.co
-PUBLIC_SUPABASE_ANON_KEY=<tu-anon-key>
-SUPABASE_SERVICE_ROLE_KEY=<tu-service-role-key>
+# Instalar dependencias
+npm install
+
+# Desarrollo
+npm run dev
+
+# Build
+npm run build
+
+# Type check
+npx astro check
+
+# Seed (crear usuarios de prueba)
+node --env-file=.env supabase/seed.mjs
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` se obtiene en:
-Supabase Dashboard → Settings → API → Project API keys → `service_role`.
+## Setup Inicial
 
-### 3) Supabase Storage
-Crear buckets:
-- `restaurant-uploads` (privado)
-- `restaurant-models` (público)
+1. Crear proyecto en [Supabase](https://supabase.com)
+2. Copiar `.env` con las credenciales:
+   ```
+   PUBLIC_SUPABASE_URL=https://xxx.supabase.co
+   PUBLIC_SUPABASE_ANON_KEY=xxx
+   SUPABASE_SERVICE_ROLE_KEY=xxx
+   ```
+3. Ejecutar `supabase/migration.sql` en el SQL Editor de Supabase
+4. Ejecutar seed: `node --env-file=.env supabase/seed.mjs`
+5. `npm run dev`
 
-### 4) RLS / políticas para storage.objects
-Ejecuta en SQL Editor:
+## Variables de Entorno
 
-```sql
-insert into storage.buckets (id, name, public)
-values ('restaurant-uploads', 'restaurant-uploads', false)
-on conflict (id) do nothing;
-
-insert into storage.buckets (id, name, public)
-values ('restaurant-models', 'restaurant-models', true)
-on conflict (id) do nothing;
-
-drop policy if exists "restaurant-uploads insert anon/auth" on storage.objects;
-drop policy if exists "restaurant-uploads read anon/auth" on storage.objects;
-drop policy if exists "restaurant-models public read" on storage.objects;
-drop policy if exists "restaurant-models service write" on storage.objects;
-
-create policy "restaurant-uploads insert anon/auth"
-on storage.objects
-for insert
-to anon, authenticated
-with check (bucket_id = 'restaurant-uploads');
-
-create policy "restaurant-uploads read anon/auth"
-on storage.objects
-for select
-to anon, authenticated
-using (bucket_id = 'restaurant-uploads');
-
-create policy "restaurant-models public read"
-on storage.objects
-for select
-to public
-using (bucket_id = 'restaurant-models');
-
-create policy "restaurant-models service write"
-on storage.objects
-for all
-to service_role
-using (bucket_id = 'restaurant-models')
-with check (bucket_id = 'restaurant-models');
-```
-
-## Instalación de fotogrametría (Mac)
-Requiere Homebrew:
-
-```bash
-brew install colmap
-brew install --cask blender
-```
-
-Este proyecto ya está adaptado a COLMAP 3.13 (Homebrew actual) usando:
-- `--FeatureExtraction.use_gpu`
-- `--FeatureMatching.use_gpu`
-No usa las flags antiguas `--SiftExtraction.use_gpu`/`--SiftMatching.use_gpu`.
-
-Verifica:
-
-```bash
-which colmap
-which InterfaceCOLMAP
-which DensifyPointCloud
-which ReconstructMesh
-which TextureMesh
-which blender
-```
-
-Si no tienes OpenMVS instalado, el endpoint usa modo fallback denso:
-- COLMAP + Blender
-- exporta GLB desde nube de puntos sparse (`model_converter` a PLY)
-- funciona, pero con menor calidad que OpenMVS texturizado
-- en equipos con 8GB RAM, el pipeline fuerza modo conservador:
-  - `FeatureExtraction.num_threads=1`
-  - `FeatureMatching.num_threads=1`
-  - `SiftExtraction.max_image_size=1600`
-  - `SiftExtraction.max_num_features=4096`
-- si `patch_match_stereo` falla por CUDA (`Dense stereo reconstruction requires CUDA`),
-  el sistema hace fallback automático a malla desde nube sparse de COLMAP.
-
-## Flujo funcional actual
-1. `npm install`
-2. `npm run dev`
-3. Abrir restaurante (`/#/restaurant/<slug>` por HashRouter)
-4. Subir fotos (ideal: 10–40, bien solapadas, buena luz)
-5. Esperar el procesamiento del endpoint:
-   - `POST /api/restaurants/process-model`
-6. Ver modelo en pantalla.
-
-## Endpoint principal
-### `POST /api/restaurants/process-model`
-Dispara reconstrucción real de `model.glb` para un slug.
-
-Body recomendado:
-
-```json
-{ "slug": "bistro-central" }
-```
-
-Respuesta exitosa:
-- `success: true`
-- `modelUrl`
-- `photosCount`
-
-## Comandos útiles de diagnóstico
-### Probar proceso manual
-```bash
-curl -i -X POST "http://localhost:4326/api/restaurants/process-model" \
-  -H "Content-Type: application/json" \
-  -d '{"slug":"bistro-central"}'
-```
-
-### Ver si el GLB está disponible públicamente
-```bash
-curl -i "https://<project-ref>.supabase.co/storage/v1/object/public/restaurant-models/bistro-central/model.glb"
-```
-
-## Problemas comunes
-- `new row violates row-level security policy`
-  - faltan/están mal las políticas de `storage.objects`.
-- `Object not found`
-  - todavía no se generó/subió `restaurant-models/{slug}/model.glb`.
-- `No se encontró "colmap"` (u otro binario)
-  - falta instalar herramientas o no están en PATH.
-- faltan binarios OpenMVS (`InterfaceCOLMAP`, `ReconstructMesh`, etc.)
-  - se usará fallback COLMAP+Blender (calidad menor), no bloquea el flujo.
-- `unrecognised option '--SiftExtraction.use_gpu'`
-  - indica script viejo para COLMAP; en este repo ya está corregido a `FeatureExtraction/FeatureMatching`.
-- reconstrucción pobre/sin detalle
-  - pocas fotos, poca superposición, blur o poca textura visual.
-
-## Reutilizar en otro proyecto
-Para portar este flujo:
-1. Copiar endpoint `src/pages/api/restaurants/process-model.ts`
-2. Copiar utilidad `src/lib/photogrammetryPipeline.ts`
-3. Replicar buckets/policies/env
-4. Adaptar nombres de rutas y `slug`
-5. Mantener estructura de entrada:
-   - `restaurant-uploads/{slug}/originals/*`
-6. Mantener salida:
-   - `restaurant-models/{slug}/model.glb`
-
-Con eso puedes reutilizar el pipeline en otra app Astro/Node con Supabase.
+| Variable | Descripción |
+|---|---|
+| `PUBLIC_SUPABASE_URL` | URL del proyecto Supabase |
+| `PUBLIC_SUPABASE_ANON_KEY` | Clave pública (anon) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Clave de servicio (solo server-side) |

@@ -7,11 +7,16 @@ import node from '@astrojs/node';
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
-  adapter: node({
-    mode: 'standalone'
-  }),
+  adapter: node({ mode: 'standalone' }),
   integrations: [react()],
+
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    ssr: {
+      noExternal: ['@supabase/supabase-js', '@supabase/ssr'],
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime'],
+    },
   }
 });

@@ -26,7 +26,7 @@ const Header = () => {
       .eq('id', userId)
       .maybeSingle(); // <- evita bloqueo si no existe
 
-    if (error) console.error('Profile fetch error:', error);
+    if (error) console.error('Profile fetch error:', error); // eslint-disable-line no-console
     setProfile(data ?? null);
   };
 

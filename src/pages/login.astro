@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar';
+import LoginForm from '../components/LoginForm';
+import { t, type LangCode } from '../lib/i18n';
+
+const lang = (Astro.locals.lang || 'en') as LangCode;
+---
+
+<Layout title={`${t('auth.login_title', lang)} - TableView360`}>
+  <div class="flex min-h-screen flex-col">
+    <Navbar client:load user={false} role={null} lang={lang} />
+    <div class="flex flex-1 items-center justify-center px-4">
+      <div class="w-full max-w-md">
+        <div class="mb-8 text-center">
+          <h1
+            class="text-3xl font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent"
+          >
+            TableView360
+          </h1>
+          <p class="mt-2 text-slate-400">{t('auth.login_subtitle', lang)}</p>
+        </div>
+        <div
+          class="rounded-2xl bg-slate-800/80 border border-slate-700/50 p-8 shadow-2xl backdrop-blur-xl"
+        >
+          <LoginForm client:load />
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

@@ -23,7 +23,7 @@ const ContactForm = () => {
       .from('contacts')
       .insert([{ name, email, message }]);
     if (error) {
-      console.error(error);
+      console.error(error); // eslint-disable-line no-console
       setStatus('error');
       return;
     }

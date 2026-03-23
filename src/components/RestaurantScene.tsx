@@ -527,7 +527,7 @@ export default function RestaurantScene({
         setIsFullscreen(false);
       }
     } catch (err) {
-      console.error('Error toggling fullscreen:', err);
+      console.error('Error toggling fullscreen:', err); // eslint-disable-line no-console
     }
   }, []);
 

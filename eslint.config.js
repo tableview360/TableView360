@@ -9,6 +9,15 @@ export default [
   {
     ignores: ['dist/**', '.astro/**', 'node_modules/**', '*.config.js'],
   },
+  {
+    files: ['supabase/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+        console: 'readonly',
+      },
+    },
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...astroPlugin.configs.recommended,

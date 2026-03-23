@@ -1,0 +1,153 @@
+---
+import CmsLayout from '../../layouts/CmsLayout.astro';
+import { createSupabaseServer } from '../../lib/supabase';
+
+interface ReservationRow {
+  id: string;
+  date: string;
+  time: string;
+  guests: number;
+  status: string;
+  restaurants: { name: string } | null;
+  profiles: { full_name: string } | null;
+}
+
+const supabase = createSupabaseServer(Astro.cookies);
+
+// Get counts
+const { count: restaurantCount } = await supabase
+  .from('restaurants')
+  .select('*', { count: 'exact', head: true });
+
+const { count: clientCount } = await supabase
+  .from('profiles')
+  .select('*', { count: 'exact', head: true })
+  .eq('role', 'client');
+
+const { count: reservationCount } = await supabase
+  .from('reservations')
+  .select('*', { count: 'exact', head: true });
+
+const { count: pendingCount } = await supabase
+  .from('reservations')
+  .select('*', { count: 'exact', head: true })
+  .eq('status', 'pending');
+
+// Recent reservations
+const { data: recentReservations } = await supabase
+  .from('reservations')
+  .select(
+    'id, date, time, guests, status, restaurants(name), profiles!reservations_client_id_fkey(full_name)'
+  )
+  .order('created_at', { ascending: false })
+  .limit(5);
+
+const stats = [
+  {
+    label: 'Restaurantes',
+    value: restaurantCount ?? 0,
+    icon: '🍽️',
+    color: 'bg-violet-500/10 text-violet-400',
+  },
+  {
+    label: 'Clientes',
+    value: clientCount ?? 0,
+    icon: '👥',
+    color: 'bg-emerald-500/10 text-emerald-400',
+  },
+  {
+    label: 'Reservas totales',
+    value: reservationCount ?? 0,
+    icon: '📅',
+    color: 'bg-violet-500/10 text-violet-400',
+  },
+  {
+    label: 'Pendientes',
+    value: pendingCount ?? 0,
+    icon: '⏳',
+    color: 'bg-amber-500/10 text-amber-300',
+  },
+];
+---
+
+<CmsLayout title="Dashboard" active="dashboard">
+  <!-- Stats -->
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      stats.map((stat) => (
+        <div class="rounded-2xl border border-slate-700/50 bg-slate-800/90 p-6">
+          <div class={`inline-flex rounded-lg p-2 ${stat.color}`}>
+            <span class="text-xl">{stat.icon}</span>
+          </div>
+          <p class="mt-4 text-2xl font-bold text-slate-100">{stat.value}</p>
+          <p class="text-sm text-slate-500">{stat.label}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Recent Reservations -->
+  <div class="mt-8 rounded-2xl border border-slate-700/50 bg-slate-800/90">
+    <div class="border-b border-slate-700/50 px-6 py-4">
+      <h2 class="text-lg font-semibold text-slate-100">Últimas reservas</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr
+            class="border-b border-slate-700/30 text-left text-sm text-slate-500"
+          >
+            <th class="px-6 py-3 font-medium">Cliente</th>
+            <th class="px-6 py-3 font-medium">Restaurante</th>
+            <th class="px-6 py-3 font-medium">Fecha</th>
+            <th class="px-6 py-3 font-medium">Hora</th>
+            <th class="px-6 py-3 font-medium">Comensales</th>
+            <th class="px-6 py-3 font-medium">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            recentReservations && recentReservations.length > 0 ? (
+              recentReservations.map((r: ReservationRow) => (
+                <tr class="border-b border-slate-800 text-sm">
+                  <td class="px-6 py-3 text-slate-100">
+                    {r.profiles?.full_name || '—'}
+                  </td>
+                  <td class="px-6 py-3 text-slate-400">
+                    {r.restaurants?.name || '—'}
+                  </td>
+                  <td class="px-6 py-3 text-slate-400">{r.date}</td>
+                  <td class="px-6 py-3 text-slate-400">{r.time}</td>
+                  <td class="px-6 py-3 text-slate-400">{r.guests}</td>
+                  <td class="px-6 py-3">
+                    <span
+                      class={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                        r.status === 'confirmed'
+                          ? 'bg-emerald-500/20 text-emerald-400'
+                          : r.status === 'cancelled'
+                            ? 'bg-red-500/20 text-red-400'
+                            : 'bg-amber-500/20 text-amber-300'
+                      }`}
+                    >
+                      {r.status === 'confirmed'
+                        ? 'Confirmada'
+                        : r.status === 'cancelled'
+                          ? 'Cancelada'
+                          : 'Pendiente'}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colspan="6" class="px-6 py-8 text-center text-slate-500">
+                  No hay reservas todavía
+                </td>
+              </tr>
+            )
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</CmsLayout>
