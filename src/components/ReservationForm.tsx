@@ -6,7 +6,10 @@ interface Props {
   restaurantName: string;
 }
 
-export default function ReservationForm({ restaurantId, restaurantName }: Props) {
+export default function ReservationForm({
+  restaurantId,
+  restaurantName,
+}: Props) {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [guests, setGuests] = useState(2);
@@ -23,28 +26,34 @@ export default function ReservationForm({ restaurantId, restaurantName }: Props)
 
     try {
       const supabase = createSupabaseBrowser();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         setError('Debes iniciar sesión');
         return;
       }
 
-      const { error: insertError } = await supabase.from('reservations').insert({
-        restaurant_id: restaurantId,
-        client_id: user.id,
-        date,
-        time,
-        guests,
-        notes: notes || null,
-      });
+      const { error: insertError } = await supabase
+        .from('reservations')
+        .insert({
+          restaurant_id: restaurantId,
+          client_id: user.id,
+          date,
+          time,
+          guests,
+          notes: notes || null,
+        });
 
       if (insertError) {
         setError(insertError.message);
         return;
       }
 
-      setSuccess(`¡Reserva creada en ${restaurantName}! Te confirmaremos pronto.`);
+      setSuccess(
+        `¡Reserva creada en ${restaurantName}! Te confirmaremos pronto.`
+      );
       setDate('');
       setTime('');
       setGuests(2);
@@ -60,19 +69,30 @@ export default function ReservationForm({ restaurantId, restaurantName }: Props)
 
   return (
     <div className="rounded-2xl border border-slate-700/40 bg-white p-6 shadow-sm">
-      <h3 className="text-lg font-semibold text-slate-100 mb-4">Hacer una reserva</h3>
+      <h3 className="text-lg font-semibold text-slate-100 mb-4">
+        Hacer una reserva
+      </h3>
 
       {error && (
-        <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-400">{error}</div>
+        <div className="mb-4 rounded-lg bg-red-500/10 p-3 text-sm text-red-400">
+          {error}
+        </div>
       )}
       {success && (
-        <div className="mb-4 rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-400">{success}</div>
+        <div className="mb-4 rounded-lg bg-emerald-500/10 p-3 text-sm text-emerald-400">
+          {success}
+        </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label htmlFor="date" className="block text-sm font-medium text-slate-300">Fecha</label>
+            <label
+              htmlFor="date"
+              className="block text-sm font-medium text-slate-300"
+            >
+              Fecha
+            </label>
             <input
               id="date"
               type="date"
@@ -84,7 +104,12 @@ export default function ReservationForm({ restaurantId, restaurantName }: Props)
             />
           </div>
           <div>
-            <label htmlFor="time" className="block text-sm font-medium text-slate-300">Hora</label>
+            <label
+              htmlFor="time"
+              className="block text-sm font-medium text-slate-300"
+            >
+              Hora
+            </label>
             <input
               id="time"
               type="time"
@@ -97,7 +122,12 @@ export default function ReservationForm({ restaurantId, restaurantName }: Props)
         </div>
 
         <div>
-          <label htmlFor="guests" className="block text-sm font-medium text-slate-300">Comensales</label>
+          <label
+            htmlFor="guests"
+            className="block text-sm font-medium text-slate-300"
+          >
+            Comensales
+          </label>
           <select
             id="guests"
             value={guests}
@@ -105,13 +135,20 @@ export default function ReservationForm({ restaurantId, restaurantName }: Props)
             className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 text-slate-100 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 focus:outline-none"
           >
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
-              <option key={n} value={n}>{n} {n === 1 ? 'persona' : 'personas'}</option>
+              <option key={n} value={n}>
+                {n} {n === 1 ? 'persona' : 'personas'}
+              </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label htmlFor="notes" className="block text-sm font-medium text-slate-300">Notas (opcional)</label>
+          <label
+            htmlFor="notes"
+            className="block text-sm font-medium text-slate-300"
+          >
+            Notas (opcional)
+          </label>
           <textarea
             id="notes"
             rows={2}

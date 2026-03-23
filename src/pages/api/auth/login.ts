@@ -9,13 +9,19 @@ export const POST: APIRoute = async ({ request }) => {
   const { email, password } = body;
 
   if (!email || !password) {
-    return new Response(JSON.stringify({ error: 'Email y contraseña son obligatorios' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: 'Email y contraseña son obligatorios' }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {

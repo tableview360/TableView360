@@ -36,11 +36,16 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="rounded-lg bg-red-500/10 p-3 text-sm text-red-400">{error}</div>
+        <div className="rounded-lg bg-red-500/10 p-3 text-sm text-red-400">
+          {error}
+        </div>
       )}
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-slate-300">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-slate-300"
+        >
           Email
         </label>
         <input
@@ -55,7 +60,10 @@ export default function LoginForm() {
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-slate-300">
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-slate-300"
+        >
           Contraseña
         </label>
         <input
@@ -79,7 +87,10 @@ export default function LoginForm() {
 
       <p className="text-center text-sm text-slate-500">
         ¿No tienes cuenta?{' '}
-        <a href="/registro" className="font-medium text-violet-400 hover:text-violet-300">
+        <a
+          href="/registro"
+          className="font-medium text-violet-400 hover:text-violet-300"
+        >
           Regístrate
         </a>
       </p>

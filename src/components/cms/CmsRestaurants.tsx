@@ -18,7 +18,14 @@ export default function CmsRestaurants() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Restaurant | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', phone: '', city: '', address: '', description: '' });
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    city: '',
+    address: '',
+    description: '',
+  });
   const [saving, setSaving] = useState(false);
 
   const supabase = createSupabaseBrowser();
@@ -33,11 +40,21 @@ export default function CmsRestaurants() {
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function openCreate() {
     setEditing(null);
-    setForm({ name: '', email: '', phone: '', city: '', address: '', description: '' });
+    setForm({
+      name: '',
+      email: '',
+      phone: '',
+      city: '',
+      address: '',
+      description: '',
+    });
     setShowForm(true);
   }
 
@@ -82,7 +99,9 @@ export default function CmsRestaurants() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <p className="text-sm text-slate-500">{restaurants.length} restaurante(s)</p>
+        <p className="text-sm text-slate-500">
+          {restaurants.length} restaurante(s)
+        </p>
         <button
           onClick={openCreate}
           className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-500"
@@ -100,46 +119,92 @@ export default function CmsRestaurants() {
             </h3>
             <form onSubmit={handleSave} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300">Nombre *</label>
-                <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 focus:border-violet-500 focus:outline-none" />
+                <label className="block text-sm font-medium text-slate-300">
+                  Nombre *
+                </label>
+                <input
+                  required
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 focus:border-violet-500 focus:outline-none"
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300">Email</label>
-                  <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 focus:border-violet-500 focus:outline-none" />
+                  <label className="block text-sm font-medium text-slate-300">
+                    Email
+                  </label>
+                  <input
+                    value={form.email}
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
+                    className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 focus:border-violet-500 focus:outline-none"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300">Teléfono</label>
-                  <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 focus:border-violet-500 focus:outline-none" />
+                  <label className="block text-sm font-medium text-slate-300">
+                    Teléfono
+                  </label>
+                  <input
+                    value={form.phone}
+                    onChange={(e) =>
+                      setForm({ ...form, phone: e.target.value })
+                    }
+                    className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 focus:border-violet-500 focus:outline-none"
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300">Ciudad</label>
-                  <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })}
-                    className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 focus:border-violet-500 focus:outline-none" />
+                  <label className="block text-sm font-medium text-slate-300">
+                    Ciudad
+                  </label>
+                  <input
+                    value={form.city}
+                    onChange={(e) => setForm({ ...form, city: e.target.value })}
+                    className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 focus:border-violet-500 focus:outline-none"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300">Dirección</label>
-                  <input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })}
-                    className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 focus:border-violet-500 focus:outline-none" />
+                  <label className="block text-sm font-medium text-slate-300">
+                    Dirección
+                  </label>
+                  <input
+                    value={form.address}
+                    onChange={(e) =>
+                      setForm({ ...form, address: e.target.value })
+                    }
+                    className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 focus:border-violet-500 focus:outline-none"
+                  />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300">Descripción</label>
-                <textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 focus:border-violet-500 focus:outline-none" />
+                <label className="block text-sm font-medium text-slate-300">
+                  Descripción
+                </label>
+                <textarea
+                  rows={3}
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                  className="mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/50 px-3 py-2 focus:border-violet-500 focus:outline-none"
+                />
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="submit" disabled={saving}
-                  className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-50">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-50"
+                >
                   {saving ? 'Guardando...' : 'Guardar'}
                 </button>
-                <button type="button" onClick={() => setShowForm(false)}
-                  className="rounded-lg border border-slate-600 bg-slate-900/50 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800/50">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="rounded-lg border border-slate-600 bg-slate-900/50 px-4 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800/50"
+                >
                   Cancelar
                 </button>
               </div>
@@ -163,18 +228,24 @@ export default function CmsRestaurants() {
           <tbody>
             {restaurants.map((r) => (
               <tr key={r.id} className="border-b border-slate-800 text-sm">
-                <td className="px-6 py-3 font-medium text-slate-100">{r.name}</td>
+                <td className="px-6 py-3 font-medium text-slate-100">
+                  {r.name}
+                </td>
                 <td className="px-6 py-3 text-slate-400">{r.city || '—'}</td>
                 <td className="px-6 py-3 text-slate-400">{r.phone || '—'}</td>
                 <td className="px-6 py-3 text-slate-400">{r.email || '—'}</td>
                 <td className="px-6 py-3">
                   <div className="flex gap-2">
-                    <button onClick={() => openEdit(r)}
-                      className="text-violet-400 hover:text-violet-300 text-sm font-medium">
+                    <button
+                      onClick={() => openEdit(r)}
+                      className="text-violet-400 hover:text-violet-300 text-sm font-medium"
+                    >
                       Editar
                     </button>
-                    <button onClick={() => handleDelete(r.id)}
-                      className="text-red-400 hover:text-red-300 text-sm font-medium">
+                    <button
+                      onClick={() => handleDelete(r.id)}
+                      className="text-red-400 hover:text-red-300 text-sm font-medium"
+                    >
                       Eliminar
                     </button>
                   </div>
@@ -183,7 +254,10 @@ export default function CmsRestaurants() {
             ))}
             {restaurants.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
+                <td
+                  colSpan={5}
+                  className="px-6 py-8 text-center text-slate-500"
+                >
                   No hay restaurantes
                 </td>
               </tr>

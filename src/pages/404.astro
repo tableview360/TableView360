@@ -1,0 +1,21 @@
+---
+import '../styles/global.css';
+import NotFoundPage from '../views/NotFoundPage';
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>404 - Página no encontrada</title>
+  </head>
+  <body
+    class="font-['Inter'] min-h-screen bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_50%,#0f172a_100%)] text-slate-50"
+  >
+    <NotFoundPage standalone={true} client:only="react" />
+  </body>
+</html>

@@ -26,7 +26,10 @@ export default function CmsClients() {
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) {
     return <div className="text-center py-10 text-slate-500">Cargando...</div>;
@@ -34,7 +37,9 @@ export default function CmsClients() {
 
   return (
     <div>
-      <p className="mb-6 text-sm text-slate-500">{clients.length} usuario(s) registrado(s)</p>
+      <p className="mb-6 text-sm text-slate-500">
+        {clients.length} usuario(s) registrado(s)
+      </p>
 
       <div className="rounded-2xl border border-slate-700/40 bg-slate-800/80 overflow-hidden">
         <table className="w-full">
@@ -49,11 +54,17 @@ export default function CmsClients() {
           <tbody>
             {clients.map((c) => (
               <tr key={c.id} className="border-b border-slate-800 text-sm">
-                <td className="px-6 py-3 font-medium text-slate-100">{c.full_name || '—'}</td>
+                <td className="px-6 py-3 font-medium text-slate-100">
+                  {c.full_name || '—'}
+                </td>
                 <td className="px-6 py-3">
-                  <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                    c.role === 'restaurant' ? 'bg-violet-500/20 text-violet-400' : 'bg-indigo-500/20 text-violet-400'
-                  }`}>
+                  <span
+                    className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                      c.role === 'restaurant'
+                        ? 'bg-violet-500/20 text-violet-400'
+                        : 'bg-indigo-500/20 text-violet-400'
+                    }`}
+                  >
                     {c.role === 'restaurant' ? 'Restaurante' : 'Cliente'}
                   </span>
                 </td>
@@ -65,7 +76,10 @@ export default function CmsClients() {
             ))}
             {clients.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
+                <td
+                  colSpan={4}
+                  className="px-6 py-8 text-center text-slate-500"
+                >
                   No hay usuarios registrados
                 </td>
               </tr>

@@ -17,7 +17,8 @@ const translations: Record<LangCode, Record<string, string>> = {
     // Hero
     'hero.title1': 'Reserva en los mejores',
     'hero.title2': 'restaurantes',
-    'hero.subtitle': 'Descubre restaurantes, haz reservas en segundos y gestiona tu negocio gastronómico desde un solo lugar.',
+    'hero.subtitle':
+      'Descubre restaurantes, haz reservas en segundos y gestiona tu negocio gastronómico desde un solo lugar.',
     'hero.cta': 'Empezar ahora',
     'hero.cta_login': 'Ya tengo cuenta',
     'hero.cta_restaurants': 'Ver Restaurantes',
@@ -65,7 +66,8 @@ const translations: Record<LangCode, Record<string, string>> = {
     'reservation.submit': 'Reservar',
     'reservation.loading': 'Reservando...',
     'reservation.success': '¡Reserva creada! Te confirmaremos pronto.',
-    'reservation.only_clients': 'Las reservas están disponibles solo para clientes registrados.',
+    'reservation.only_clients':
+      'Las reservas están disponibles solo para clientes registrados.',
     'reservation.photos': 'Fotos',
   },
   en: {
@@ -79,7 +81,8 @@ const translations: Record<LangCode, Record<string, string>> = {
     // Hero
     'hero.title1': 'Book at the best',
     'hero.title2': 'restaurants',
-    'hero.subtitle': 'Discover restaurants, make reservations in seconds, and manage your food business from one place.',
+    'hero.subtitle':
+      'Discover restaurants, make reservations in seconds, and manage your food business from one place.',
     'hero.cta': 'Get started',
     'hero.cta_login': 'I have an account',
     'hero.cta_restaurants': 'View Restaurants',
@@ -127,7 +130,8 @@ const translations: Record<LangCode, Record<string, string>> = {
     'reservation.submit': 'Reserve',
     'reservation.loading': 'Reserving...',
     'reservation.success': 'Reservation created! We will confirm soon.',
-    'reservation.only_clients': 'Reservations are only available for registered clients.',
+    'reservation.only_clients':
+      'Reservations are only available for registered clients.',
     'reservation.photos': 'Photos',
   },
 };

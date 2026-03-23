@@ -1,4 +1,9 @@
-import { createBrowserClient, createServerClient, parseCookieHeader, serializeCookieHeader } from '@supabase/ssr';
+import {
+  createBrowserClient,
+  createServerClient,
+  parseCookieHeader,
+  serializeCookieHeader,
+} from '@supabase/ssr';
 import type { AstroCookies } from 'astro';
 
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
@@ -12,7 +17,10 @@ export function createSupabaseServer(cookies: AstroCookies) {
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
-        return parseCookieHeader(cookies.get('sb-auth')?.value ?? '') as { name: string; value: string }[];
+        return parseCookieHeader(cookies.get('sb-auth')?.value ?? '') as {
+          name: string;
+          value: string;
+        }[];
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value, options }) =>
@@ -23,15 +31,24 @@ export function createSupabaseServer(cookies: AstroCookies) {
   });
 }
 
-export function createSupabaseServerFromHeaders(request: Request, responseHeaders: Headers) {
+export function createSupabaseServerFromHeaders(
+  request: Request,
+  responseHeaders: Headers
+) {
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
-        return parseCookieHeader(request.headers.get('Cookie') ?? '') as { name: string; value: string }[];
+        return parseCookieHeader(request.headers.get('Cookie') ?? '') as {
+          name: string;
+          value: string;
+        }[];
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value, options }) =>
-          responseHeaders.append('Set-Cookie', serializeCookieHeader(name, value, options))
+          responseHeaders.append(
+            'Set-Cookie',
+            serializeCookieHeader(name, value, options)
+          )
         );
       },
     },
