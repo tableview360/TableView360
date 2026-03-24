@@ -15,8 +15,5 @@ export default defineConfig({
     ssr: {
       noExternal: ['@supabase/supabase-js', '@supabase/ssr'],
     },
-    optimizeDeps: {
-      include: ['react', 'react-dom', 'react-dom/client', 'react/jsx-runtime'],
-    },
   },
 });
