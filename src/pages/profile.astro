@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar';
 import ProfileSettings from '../components/ProfileSettings';
+import Footer from '../components/footer/footer';
 import { createSupabaseServer } from '../lib/supabase';
 import { t, type LangCode } from '../lib/i18n';
 
@@ -50,5 +51,6 @@ const avatarUrl = profile?.avatar_url ?? null;
         lang={lang}
       />
     </main>
+    <Footer client:load lang={lang} />
   </div>
 </Layout>

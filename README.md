@@ -140,6 +140,7 @@ node --env-file=.env supabase/seed.mjs
 ```
 
 ## Prettier
+
 npx prettier --write .
 
 ## Setup Inicial

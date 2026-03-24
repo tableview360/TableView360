@@ -76,5 +76,21 @@
   "Your Message": "Tu mensaje",
   "Send Message": "Enviar mensaje",
   "Message sent successfully!": "¡Mensaje enviado correctamente!",
-  "Please fill all fields correctly.": "Por favor, completa todos los campos correctamente."
+  "Please fill all fields correctly.": "Por favor, completa todos los campos correctamente.",
+  "footer": {
+    "description": "La plataforma inteligente para reservas de restaurantes con vistas inmersivas en 360°. Descubre, explora y reserva tu mesa perfecta.",
+    "navigation": "Navegación",
+    "legal": "Legal",
+    "productOf": "Un producto de Stoyko Todorov.",
+    "nav": {
+      "home": "Inicio",
+      "restaurants": "Restaurantes",
+      "blog": "Blog",
+      "cookiePolicy": "Política de cookies"
+    }
+  },
+  "blog": {
+    "subtitle": "Noticias, consejos y novedades de TableView360.",
+    "comingSoon": "Estamos preparando contenido increíble para ti. ¡Pronto llegarán nuevos artículos — mantente atento!"
+  }
 }

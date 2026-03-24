@@ -141,6 +141,66 @@ const translations: Record<LangCode, Record<string, string>> = {
     'common.cancel': 'Cancelar',
     'common.save': 'Guardar',
     'common.saving': 'Guardando...',
+    // Footer
+    'footer.description':
+      'La plataforma inteligente para reservas de restaurantes con vistas inmersivas en 360°. Descubre, explora y reserva tu mesa perfecta.',
+    'footer.navigation': 'Navegación',
+    'footer.legal': 'Legal',
+    'footer.productOf': 'Un producto de Stoyko Todorov.',
+    'footer.nav.home': 'Inicio',
+    'footer.nav.restaurants': 'Restaurantes',
+    'footer.nav.blog': 'Blog',
+    'footer.nav.cookiePolicy': 'Política de cookies',
+    FAQ: 'Preguntas frecuentes',
+    'Terms of Service': 'Términos de servicio',
+    'Privacy / GDPR': 'Privacidad / GDPR',
+    'Contact Us': 'Contáctanos',
+    'All rights reserved.': 'Todos los derechos reservados.',
+    'Your Name': 'Tu nombre',
+    'Your Email': 'Tu correo electrónico',
+    'Your Message': 'Tu mensaje',
+    'Send Message': 'Enviar mensaje',
+    'Sending...': 'Enviando...',
+    'Message sent successfully!': '¡Mensaje enviado correctamente!',
+    'Please fill all fields correctly.':
+      'Por favor, completa todos los campos correctamente.',
+    // FAQ
+    'faq.q1': '¿Qué es TableView360?',
+    'faq.a1':
+      'TableView360 es una plataforma de reservas de restaurantes que ofrece vistas inmersivas en 360° para que puedas explorar el local antes de reservar.',
+    'faq.q2': '¿Cómo hago una reserva?',
+    'faq.a2':
+      'Regístrate como cliente, navega por los restaurantes disponibles, elige tu mesa y selecciona la fecha y hora deseadas.',
+    'faq.q3': '¿Es gratis usar TableView360?',
+    'faq.a3':
+      'Sí, registrarse y hacer reservas es completamente gratuito para los clientes.',
+    'faq.q4': '¿Cómo puedo registrar mi restaurante?',
+    'faq.a4':
+      'Crea una cuenta seleccionando el tipo "Restaurante" durante el registro. Luego podrás gestionar tu local desde el panel de control.',
+    // Terms
+    'terms.section1_title': '1. Aceptación de los términos',
+    'terms.section1_body':
+      'Al acceder y utilizar TableView360, aceptas estar sujeto a estos términos de servicio. Si no estás de acuerdo con alguna parte, no debes utilizar la plataforma.',
+    'terms.section2_title': '2. Uso del servicio',
+    'terms.section2_body':
+      'Te comprometes a utilizar la plataforma de forma responsable, no crear cuentas falsas, y respetar las políticas de reserva de cada restaurante.',
+    'terms.section3_title': '3. Reservas y cancelaciones',
+    'terms.section3_body':
+      'Las reservas realizadas a través de TableView360 están sujetas a la disponibilidad y las políticas de cada restaurante. Cancela con antelación para evitar penalizaciones.',
+    // Privacy
+    'privacy.section1_title': '1. Datos que recopilamos',
+    'privacy.section1_body':
+      'Recopilamos tu nombre, correo electrónico, teléfono y datos de reserva para proporcionarte el servicio. No vendemos tus datos a terceros.',
+    'privacy.section2_title': '2. Tus derechos (GDPR)',
+    'privacy.section2_body':
+      'Tienes derecho a acceder, rectificar, eliminar y exportar tus datos personales en cualquier momento. Contáctanos para ejercer estos derechos.',
+    'privacy.section3_title': '3. Cookies',
+    'privacy.section3_body':
+      'Utilizamos cookies esenciales para el funcionamiento de la plataforma y cookies de preferencia de idioma. No utilizamos cookies de rastreo publicitario.',
+    // Blog
+    'blog.subtitle': 'Noticias, consejos y novedades de TableView360.',
+    'blog.comingSoon':
+      'Estamos preparando contenido increíble para ti. ¡Pronto llegarán nuevos artículos!',
   },
   en: {
     // Nav
@@ -276,6 +336,65 @@ const translations: Record<LangCode, Record<string, string>> = {
     'common.cancel': 'Cancel',
     'common.save': 'Save',
     'common.saving': 'Saving...',
+    // Footer
+    'footer.description':
+      'The smart platform for restaurant reservations with immersive 360° views. Discover, explore and book your perfect table.',
+    'footer.navigation': 'Navigation',
+    'footer.legal': 'Legal',
+    'footer.productOf': 'A product of Stoyko Todorov.',
+    'footer.nav.home': 'Home',
+    'footer.nav.restaurants': 'Restaurants',
+    'footer.nav.blog': 'Blog',
+    'footer.nav.cookiePolicy': 'Cookie Policy',
+    FAQ: 'FAQ',
+    'Terms of Service': 'Terms of Service',
+    'Privacy / GDPR': 'Privacy / GDPR',
+    'Contact Us': 'Contact Us',
+    'All rights reserved.': 'All rights reserved.',
+    'Your Name': 'Your Name',
+    'Your Email': 'Your Email',
+    'Your Message': 'Your Message',
+    'Send Message': 'Send Message',
+    'Sending...': 'Sending...',
+    'Message sent successfully!': 'Message sent successfully!',
+    'Please fill all fields correctly.': 'Please fill all fields correctly.',
+    // FAQ
+    'faq.q1': 'What is TableView360?',
+    'faq.a1':
+      'TableView360 is a restaurant reservation platform that offers immersive 360° views so you can explore the venue before booking.',
+    'faq.q2': 'How do I make a reservation?',
+    'faq.a2':
+      'Sign up as a client, browse available restaurants, choose your table, and select your preferred date and time.',
+    'faq.q3': 'Is TableView360 free to use?',
+    'faq.a3':
+      'Yes, signing up and making reservations is completely free for clients.',
+    'faq.q4': 'How can I register my restaurant?',
+    'faq.a4':
+      'Create an account selecting the "Restaurant" type during registration. Then you can manage your venue from the dashboard.',
+    // Terms
+    'terms.section1_title': '1. Acceptance of Terms',
+    'terms.section1_body':
+      'By accessing and using TableView360, you agree to be bound by these terms of service. If you do not agree with any part, you should not use the platform.',
+    'terms.section2_title': '2. Use of Service',
+    'terms.section2_body':
+      'You agree to use the platform responsibly, not create fake accounts, and respect the reservation policies of each restaurant.',
+    'terms.section3_title': '3. Reservations and Cancellations',
+    'terms.section3_body':
+      "Reservations made through TableView360 are subject to availability and each restaurant's policies. Cancel in advance to avoid penalties.",
+    // Privacy
+    'privacy.section1_title': '1. Data We Collect',
+    'privacy.section1_body':
+      'We collect your name, email, phone, and reservation data to provide the service. We do not sell your data to third parties.',
+    'privacy.section2_title': '2. Your Rights (GDPR)',
+    'privacy.section2_body':
+      'You have the right to access, rectify, delete, and export your personal data at any time. Contact us to exercise these rights.',
+    'privacy.section3_title': '3. Cookies',
+    'privacy.section3_body':
+      'We use essential cookies for platform functionality and language preference cookies. We do not use advertising tracking cookies.',
+    // Blog
+    'blog.subtitle': 'News, tips and updates from TableView360.',
+    'blog.comingSoon':
+      "We're preparing amazing content for you. New articles are coming soon!",
   },
 };
 

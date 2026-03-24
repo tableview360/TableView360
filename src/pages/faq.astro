@@ -1,0 +1,110 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar';
+import Footer from '../components/footer/footer';
+import { t, type LangCode } from '../lib/i18n';
+import { createSupabaseServer } from '../lib/supabase';
+
+const lang = (Astro.locals.lang || 'en') as LangCode;
+const supabase = createSupabaseServer(Astro.cookies, Astro.request);
+const {
+  data: { user },
+} = await supabase.auth.getUser();
+
+let role = null;
+let username: string | null = null;
+let avatarUrl: string | null = null;
+if (user) {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, username, full_name, avatar_url')
+    .eq('id', user.id)
+    .maybeSingle();
+  role = profile?.role ?? null;
+  username = profile?.username || profile?.full_name || null;
+  avatarUrl = profile?.avatar_url ?? null;
+}
+---
+
+<Layout title={`${t('FAQ', lang)} - TableView360`}>
+  <div class="min-h-screen flex flex-col">
+    <Navbar
+      client:load
+      user={!!user}
+      role={role}
+      lang={lang}
+      username={username}
+      avatarUrl={avatarUrl}
+    />
+
+    <main class="flex-1 mx-auto max-w-4xl px-6 pt-28 pb-16">
+      <h1 class="text-4xl font-bold text-slate-50 mb-12 text-center">
+        {t('FAQ', lang)}
+      </h1>
+
+      <div class="space-y-6">
+        <details
+          class="group rounded-2xl border border-slate-700/50 bg-slate-800/60 p-6"
+        >
+          <summary
+            class="flex cursor-pointer items-center justify-between text-lg font-medium text-slate-100 group-open:mb-4"
+          >
+            {t('faq.q1', lang)}
+            <span
+              class="ml-4 text-slate-500 transition-transform group-open:rotate-45"
+              >+</span
+            >
+          </summary>
+          <p class="text-slate-400 leading-relaxed">{t('faq.a1', lang)}</p>
+        </details>
+
+        <details
+          class="group rounded-2xl border border-slate-700/50 bg-slate-800/60 p-6"
+        >
+          <summary
+            class="flex cursor-pointer items-center justify-between text-lg font-medium text-slate-100 group-open:mb-4"
+          >
+            {t('faq.q2', lang)}
+            <span
+              class="ml-4 text-slate-500 transition-transform group-open:rotate-45"
+              >+</span
+            >
+          </summary>
+          <p class="text-slate-400 leading-relaxed">{t('faq.a2', lang)}</p>
+        </details>
+
+        <details
+          class="group rounded-2xl border border-slate-700/50 bg-slate-800/60 p-6"
+        >
+          <summary
+            class="flex cursor-pointer items-center justify-between text-lg font-medium text-slate-100 group-open:mb-4"
+          >
+            {t('faq.q3', lang)}
+            <span
+              class="ml-4 text-slate-500 transition-transform group-open:rotate-45"
+              >+</span
+            >
+          </summary>
+          <p class="text-slate-400 leading-relaxed">{t('faq.a3', lang)}</p>
+        </details>
+
+        <details
+          class="group rounded-2xl border border-slate-700/50 bg-slate-800/60 p-6"
+        >
+          <summary
+            class="flex cursor-pointer items-center justify-between text-lg font-medium text-slate-100 group-open:mb-4"
+          >
+            {t('faq.q4', lang)}
+            <span
+              class="ml-4 text-slate-500 transition-transform group-open:rotate-45"
+              >+</span
+            >
+          </summary>
+          <p class="text-slate-400 leading-relaxed">{t('faq.a4', lang)}</p>
+        </details>
+      </div>
+    </main>
+
+    <Footer client:load lang={lang} />
+  </div>
+</Layout>

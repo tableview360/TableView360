@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import LoginModal from '../components/LoginModal';
 import PopularRestaurants from '../components/home/PopularRestaurants';
 import RecentReservations from '../components/home/RecentReservations';
+import Footer from '../components/footer/footer';
 import { createSupabaseServer } from '../lib/supabase';
 import { t, localePath, type LangCode } from '../lib/i18n';
 
@@ -97,6 +98,8 @@ const showLogin = Astro.url.searchParams.get('login') === 'true' && !user;
       )
     }
   </div>
+
+  <Footer client:load lang={lang} />
 
   {showLogin && <LoginModal open={true} client:load />}
 </Layout>

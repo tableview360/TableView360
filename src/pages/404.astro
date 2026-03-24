@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import NotFoundPage from '../views/NotFoundPage';
+import Footer from '../components/footer/footer';
 ---
 
 <!doctype html>
@@ -23,5 +24,6 @@ import NotFoundPage from '../views/NotFoundPage';
     class="font-['Inter'] min-h-screen bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_50%,#0f172a_100%)] text-slate-50"
   >
     <NotFoundPage standalone={true} client:only="react" />
+    <Footer client:load lang="en" />
   </body>
 </html>

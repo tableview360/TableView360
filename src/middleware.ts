@@ -40,6 +40,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
     path === '/' ||
     path === '/login' ||
     path === '/registro' ||
+    path === '/faq' ||
+    path === '/terms' ||
+    path === '/privacy' ||
+    path === '/contact-us' ||
+    path === '/blog' ||
+    path.startsWith('/restaurantes') ||
     path.startsWith('/api/') ||
     path.startsWith('/_') ||
     /\.(css|js|svg|ico|png|jpg|jpeg|webp|woff2?)$/.test(path);
