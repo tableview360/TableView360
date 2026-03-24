@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Navbar from '../../components/Navbar';
+import Footer from '../../components/footer/footer';
 import { createSupabaseServer } from '../../lib/supabase';
 import { type LangCode } from '../../lib/i18n';
 
@@ -94,5 +95,6 @@ if (restaurantsError) {
         )
       }
     </main>
+    <Footer client:load lang={lang} />
   </div>
 </Layout>

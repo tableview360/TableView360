@@ -17,7 +17,7 @@ const Layout = ({ children, standalone = false }: LayoutProps) => {
       <main className="min-h-screen pt-20">
         {standalone ? children : <Outlet />}
       </main>
-      <Footer />
+      <Footer lang="en" />
     </>
   );
 };

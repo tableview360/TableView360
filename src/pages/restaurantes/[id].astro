@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Navbar from '../../components/Navbar';
 import ReservationForm from '../../components/ReservationForm';
+import Footer from '../../components/footer/footer';
 import { createSupabaseServer } from '../../lib/supabase';
 import { type LangCode } from '../../lib/i18n';
 
@@ -128,5 +129,6 @@ const { data: photos } = await supabase
         </div>
       </div>
     </main>
+    <Footer client:load lang={lang} />
   </div>
 </Layout>

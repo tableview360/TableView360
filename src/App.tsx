@@ -12,6 +12,7 @@ import FAQPage from './views/FAQPage';
 import TermsPage from './views/TermsPage';
 import PrivacyPage from './views/PrivacyPage';
 import ContactPage from './views/ContactPage';
+import BlogPage from './views/BlogPage';
 import RestaurantsPage from './views/RestaurantsPage';
 import RestaurantDetailPage from './views/RestaurantDetailPage';
 
@@ -28,6 +29,7 @@ const AppRoutes = () => (
     <Route path="terms" element={<TermsPage />} />
     <Route path="privacy" element={<PrivacyPage />} />
     <Route path="contact-us" element={<ContactPage />} />
+    <Route path="blog" element={<BlogPage />} />
     <Route path="restaurants" element={<RestaurantsPage />} />
     <Route path="restaurant/:slug" element={<RestaurantDetailPage />} />
     <Route path="*" element={<NotFoundPage />} />

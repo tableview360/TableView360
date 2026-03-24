@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar';
 import MisReservasList from '../components/MisReservasList';
+import Footer from '../components/footer/footer';
 import { createSupabaseServer } from '../lib/supabase';
 import { t, type LangCode } from '../lib/i18n';
 
@@ -64,5 +65,6 @@ const list = reservations ?? [];
 
       <MisReservasList client:load initialReservations={list} lang={lang} />
     </main>
+    <Footer client:load lang={lang} />
   </div>
 </Layout>
