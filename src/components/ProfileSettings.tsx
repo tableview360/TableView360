@@ -50,7 +50,7 @@ export default function ProfileSettings({
     const path = `${userId}/avatar.${ext}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('avatars')
+      .from('client-avatars')
       .upload(path, file, { upsert: true });
 
     if (uploadError) {
@@ -61,7 +61,7 @@ export default function ProfileSettings({
 
     const {
       data: { publicUrl },
-    } = supabase.storage.from('avatars').getPublicUrl(path);
+    } = supabase.storage.from('client-avatars').getPublicUrl(path);
 
     // Add cache-busting so the browser reloads the new image
     const urlWithBust = `${publicUrl}?t=${Date.now()}`;
