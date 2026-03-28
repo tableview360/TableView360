@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { localePath, t, type LangCode } from '../lib/i18n';
+import { createSupabaseBrowser } from '../lib/supabase/client';
 
 interface Props {
   lang: LangCode;
@@ -15,6 +16,7 @@ export default function LoginForm({ lang }: Props) {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+  const supabase = createSupabaseBrowser();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -22,20 +24,34 @@ export default function LoginForm({ lang }: Props) {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, lang }),
-      });
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Login error');
+      if (signInError || !data.user) {
+        setError(signInError?.message || 'Login error');
         return;
       }
 
-      router.push(data.redirectTo || localePath('/', lang));
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      const role =
+        profile?.role ??
+        data.user.app_metadata?.role ??
+        data.user.user_metadata?.role ??
+        'client';
+      const redirectTo =
+        role === 'restaurant' || role === 'admin'
+          ? localePath('/dashboard', lang)
+          : localePath('/', lang);
+
+      router.replace(redirectTo);
       router.refresh();
     } catch {
       setError(t('auth.error_connection', lang));
@@ -107,3 +123,4 @@ export default function LoginForm({ lang }: Props) {
     </form>
   );
 }
+

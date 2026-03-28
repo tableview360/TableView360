@@ -550,7 +550,7 @@ export default function RestaurantScene({
       }`}
     >
       <Canvas
-        shadows
+        shadows="percentage"
         camera={{ position: [0, 6, 10], fov: 50 }}
         dpr={[1, 2]}
         gl={{

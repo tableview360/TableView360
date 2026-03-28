@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { createSupabaseBrowser } from '@/lib/supabase/client';
+import Link from 'next/link';
 
 interface Props {
   open: boolean;
@@ -10,6 +12,7 @@ export default function LoginModal({ open }: Props) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const supabase = createSupabaseBrowser();
 
   if (!isOpen) return null;
 
@@ -19,20 +22,36 @@ export default function LoginModal({ open }: Props) {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Error al iniciar sesión');
+      if (signInError || !data.user) {
+        setError(signInError?.message || 'Error al iniciar sesión');
         return;
       }
 
-      window.location.href = data.redirectTo;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      const role =
+        profile?.role ??
+        data.user.app_metadata?.role ??
+        data.user.user_metadata?.role ??
+        'client';
+      const maybeLang = window.location.pathname.split('/')[1];
+      const lang = maybeLang === 'es' ? 'es' : 'en';
+      const redirectTo =
+        role === 'restaurant' || role === 'admin'
+          ? `/${lang}/dashboard`
+          : `/${lang}`;
+
+      window.location.assign(redirectTo);
     } catch {
       setError('Error de conexión');
     } finally {
@@ -104,12 +123,12 @@ export default function LoginModal({ open }: Props) {
 
         <div className="mt-6 text-center text-sm text-slate-500">
           ¿No tienes cuenta?{' '}
-          <a
+          <Link
             href="/register"
             className="font-medium text-violet-400 hover:text-violet-300"
           >
             Regístrate
-          </a>
+          </Link>
         </div>
 
         <button
