@@ -1,6 +1,7 @@
 'use client';
 
 import { createBrowserClient } from '@supabase/ssr';
+import { getSupabasePublicEnv } from './env';
 let supabaseBrowserSingleton: ReturnType<typeof createBrowserClient> | null = null;
 
 export function createSupabaseBrowser() {
@@ -8,10 +9,8 @@ export function createSupabaseBrowser() {
     return supabaseBrowserSingleton;
   }
 
-  supabaseBrowserSingleton = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
+  const { supabaseUrl, supabaseAnonKey } = getSupabasePublicEnv();
+  supabaseBrowserSingleton = createBrowserClient(supabaseUrl, supabaseAnonKey);
 
   return supabaseBrowserSingleton;
 }
