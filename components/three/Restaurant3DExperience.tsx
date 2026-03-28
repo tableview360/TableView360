@@ -245,8 +245,6 @@ function NavigationController({
         touchLookDeltaRef.current.dy = 0;
       }
 
-      setIsFullscreenFallback(true);
-
       camera.rotation.order = 'YXZ';
       camera.rotation.y = yawRef.current;
       camera.rotation.x = pitchRef.current;
