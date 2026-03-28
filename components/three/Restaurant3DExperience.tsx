@@ -66,6 +66,12 @@ interface DocumentWithWebkitFullscreen extends Document {
   webkitFullscreenElement?: Element | null;
   webkitExitFullscreen?: () => Promise<void> | void;
 }
+interface ScreenWithOrientationLock extends Screen {
+  orientation?: ScreenOrientation & {
+    lock?: (orientation: 'landscape' | 'portrait' | string) => Promise<void>;
+    unlock?: () => void;
+  };
+}
 
 const EYE_HEIGHT = 1.7;
 const DESKTOP_MOVE_SPEED = 4.25;
@@ -327,17 +333,28 @@ function SceneTables({
         const x = table.x_position ?? 0;
         const z = table.y_position ?? 0;
         const y = 0.45;
+        const handleTableSelection = (
+          event: ThreeEvent<MouseEvent | PointerEvent>,
+        ) => {
+          event.stopPropagation();
+          if (!isInteractive || isReserved) return;
+          onTableClick(table);
+        };
 
         return (
           <group key={table.id} position={[x, y, z]}>
             <mesh
+              onClick={handleTableSelection}
+              onPointerDown={handleTableSelection}
+            >
+              <cylinderGeometry args={[0.72, 0.72, 0.45, 32]} />
+              <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+            </mesh>
+            <mesh
               castShadow
               receiveShadow
-              onClick={(event: ThreeEvent<MouseEvent>) => {
-                event.stopPropagation();
-                if (!isInteractive || isReserved) return;
-                onTableClick(table);
-              }}
+              onClick={handleTableSelection}
+              onPointerDown={handleTableSelection}
             >
               <cylinderGeometry args={[0.42, 0.42, 0.16, 32]} />
               <meshStandardMaterial
@@ -349,7 +366,12 @@ function SceneTables({
               />
             </mesh>
             {showLabels && (
-              <Html position={[0, 0.45, 0]} center distanceFactor={12}>
+              <Html
+                position={[0, 0.45, 0]}
+                center
+                distanceFactor={12}
+                style={{ pointerEvents: 'none' }}
+              >
                 <div
                   className={`rounded-md px-2 py-1 text-[11px] font-medium text-white ${
                     isReserved ? 'bg-red-600/90' : 'bg-emerald-600/90'
@@ -382,6 +404,7 @@ export default function Restaurant3DExperience({
   const touchLookDeltaRef = useRef({ dx: 0, dy: 0 });
   const touchLookLastPointRef = useRef<{ x: number; y: number } | null>(null);
   const hasAutoRequestedPointerLockRef = useRef(false);
+  const hasLockedLandscapeRef = useRef(false);
   const supabase = useMemo(() => createSupabaseBrowser(), []);
   const stageElementId = useMemo(
     () => `restaurant-3d-stage-${restaurantId.slice(0, 8)}`,
@@ -447,6 +470,36 @@ export default function Restaurant3DExperience({
     }
   }, [isTouchDevice]);
 
+  const lockLandscapeOrientation = useCallback(async () => {
+    if (!isTouchDevice) return;
+    const screenWithOrientation = screen as ScreenWithOrientationLock;
+    const orientation = screenWithOrientation.orientation;
+    if (!orientation?.lock) return;
+
+    try {
+      await orientation.lock('landscape');
+      hasLockedLandscapeRef.current = true;
+    } catch {
+      hasLockedLandscapeRef.current = false;
+    }
+  }, [isTouchDevice]);
+
+  const unlockLandscapeOrientation = useCallback(() => {
+    if (!hasLockedLandscapeRef.current) return;
+    const screenWithOrientation = screen as ScreenWithOrientationLock;
+    const orientation = screenWithOrientation.orientation;
+
+    if (orientation?.unlock) {
+      try {
+        orientation.unlock();
+      } catch {
+        // Ignore unsupported unlock errors.
+      }
+    }
+
+    hasLockedLandscapeRef.current = false;
+  }, []);
+
   const toggleFullscreen = useCallback(async () => {
     if (!sceneContainerRef.current) return;
 
@@ -460,32 +513,39 @@ export default function Restaurant3DExperience({
         if (activeFullscreenElement) {
           if (document.exitFullscreen) {
             await document.exitFullscreen();
+            unlockLandscapeOrientation();
             return;
           }
 
           if (doc.webkitExitFullscreen) {
             await doc.webkitExitFullscreen();
+            unlockLandscapeOrientation();
             return;
           }
         }
 
         setIsFullscreenFallback(false);
+        unlockLandscapeOrientation();
         return;
       }
       if (element.requestFullscreen) {
         await element.requestFullscreen();
+        await lockLandscapeOrientation();
         return;
       }
 
       if (element.webkitRequestFullscreen) {
         await element.webkitRequestFullscreen();
+        await lockLandscapeOrientation();
         return;
       }
 
       setIsFullscreenFallback(true);
+      await lockLandscapeOrientation();
     } catch {
       if (!activeFullscreenElement) {
         setIsFullscreenFallback(true);
+        await lockLandscapeOrientation();
         return;
       }
       setMessage({
@@ -493,7 +553,11 @@ export default function Restaurant3DExperience({
         text: 'No se pudo cambiar a pantalla completa en este navegador.',
       });
     }
-  }, [isFullscreenFallback]);
+  }, [
+    isFullscreenFallback,
+    lockLandscapeOrientation,
+    unlockLandscapeOrientation,
+  ]);
 
   const openReservationModal = useCallback(
     (table: RestaurantTableRow) => {
@@ -527,6 +591,17 @@ export default function Restaurant3DExperience({
       document.exitPointerLock();
     }
   }, [isReservationModalOpen, stopAllMovement]);
+
+  useEffect(() => {
+    if (isStageFullscreen) return;
+    unlockLandscapeOrientation();
+  }, [isStageFullscreen, unlockLandscapeOrientation]);
+
+  useEffect(() => {
+    return () => {
+      unlockLandscapeOrientation();
+    };
+  }, [unlockLandscapeOrientation]);
 
   const handleLookPadTouchStart = useCallback(
     (event: ReactTouchEvent<HTMLDivElement>) => {
@@ -1024,6 +1099,14 @@ export default function Restaurant3DExperience({
             ? 'fixed inset-0 z-[3000] h-screen w-screen rounded-none border-0'
             : 'h-[560px] rounded-xl'
         }`}
+        style={
+          isStageFullscreen
+            ? {
+                height: '100dvh',
+                width: '100dvw',
+              }
+            : undefined
+        }
         onWheel={(event) => {
           if (isStageFullscreen || isPointerLocked) {
             event.preventDefault();
