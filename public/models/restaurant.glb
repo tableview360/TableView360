@@ -1,0 +1,6 @@
+import { useGLTF } from "@react-three/drei";
+
+export default function RestaurantModel() {
+  const { scene } = useGLTF("/models/restaurant.glb");
+  return <primitive object={scene} />;
+}
