@@ -9,6 +9,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type FormEvent,
   type MutableRefObject,
   type TouchEvent as ReactTouchEvent,
@@ -398,6 +399,7 @@ export default function Restaurant3DExperience({
   const [reservingTableId, setReservingTableId] = useState<string | null>(null);
   const [loadingAvailability, setLoadingAvailability] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFullscreenFallback, setIsFullscreenFallback] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [isLookPadActive, setIsLookPadActive] = useState(false);
   const [isPointerLocked, setIsPointerLocked] = useState(false);
@@ -417,6 +419,7 @@ export default function Restaurant3DExperience({
     ? navigationBounds
     : fallbackNavigationBounds;
   const isReservationModalOpen = Boolean(reservationDraft);
+  const isStageFullscreen = isFullscreen || isFullscreenFallback;
 
   const setMoveDirection = useCallback((direction: MoveDirection, active: boolean) => {
     moveStateRef.current[direction] = active;
@@ -453,33 +456,44 @@ export default function Restaurant3DExperience({
       document.fullscreenElement ?? doc.webkitFullscreenElement ?? null;
 
     try {
-      if (!activeFullscreenElement) {
-        if (element.requestFullscreen) {
-          await element.requestFullscreen();
-          return;
+      if (activeFullscreenElement || isFullscreenFallback) {
+        if (activeFullscreenElement) {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+            return;
+          }
+
+          if (doc.webkitExitFullscreen) {
+            await doc.webkitExitFullscreen();
+            return;
+          }
         }
 
-        if (element.webkitRequestFullscreen) {
-          await element.webkitRequestFullscreen();
-        }
+        setIsFullscreenFallback(false);
+        return;
+      }
+      if (element.requestFullscreen) {
+        await element.requestFullscreen();
         return;
       }
 
-      if (document.exitFullscreen) {
-        await document.exitFullscreen();
+      if (element.webkitRequestFullscreen) {
+        await element.webkitRequestFullscreen();
         return;
       }
 
-      if (doc.webkitExitFullscreen) {
-        await doc.webkitExitFullscreen();
-      }
+      setIsFullscreenFallback(true);
     } catch {
+      if (!activeFullscreenElement) {
+        setIsFullscreenFallback(true);
+        return;
+      }
       setMessage({
         type: 'error',
         text: 'No se pudo cambiar a pantalla completa en este navegador.',
       });
     }
-  }, []);
+  }, [isFullscreenFallback]);
 
   const openReservationModal = useCallback(
     (table: RestaurantTableRow) => {
@@ -758,6 +772,9 @@ export default function Restaurant3DExperience({
       const activeFullscreenElement =
         document.fullscreenElement ?? doc.webkitFullscreenElement ?? null;
       setIsFullscreen(Boolean(activeFullscreenElement));
+      if (activeFullscreenElement) {
+        setIsFullscreenFallback(false);
+      }
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
@@ -773,7 +790,7 @@ export default function Restaurant3DExperience({
   }, []);
 
   useEffect(() => {
-    if (!isFullscreen) {
+    if (!isStageFullscreen) {
       hasAutoRequestedPointerLockRef.current = false;
       return;
     }
@@ -795,10 +812,15 @@ export default function Restaurant3DExperience({
     return () => {
       window.clearTimeout(timerId);
     };
-  }, [isFullscreen, isReservationModalOpen, isTouchDevice, requestPointerLock]);
+  }, [
+    isStageFullscreen,
+    isReservationModalOpen,
+    isTouchDevice,
+    requestPointerLock,
+  ]);
 
   useEffect(() => {
-    if (!isFullscreen) {
+    if (!isStageFullscreen) {
       stopAllMovement();
       return;
     }
@@ -838,7 +860,7 @@ export default function Restaurant3DExperience({
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isFullscreen, stopAllMovement]);
+  }, [isStageFullscreen, stopAllMovement]);
 
   const handleReservationSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -950,7 +972,13 @@ export default function Restaurant3DExperience({
   ).length;
 
   const moveButtonClass =
-    'h-11 w-11 rounded-xl border border-slate-600/80 bg-slate-900/90 text-sm font-semibold text-slate-100 backdrop-blur-sm active:bg-slate-700';
+    'h-11 w-11 select-none touch-none rounded-xl border border-slate-600/80 bg-slate-900/90 text-sm font-semibold text-slate-100 backdrop-blur-sm active:bg-slate-700';
+  const mobileControlStyle: CSSProperties = {
+    WebkitTouchCallout: 'none',
+    WebkitUserSelect: 'none',
+    userSelect: 'none',
+    touchAction: 'none',
+  };
 
   return (
     <section className="rounded-2xl border border-slate-700/50 bg-slate-900/90 p-5 shadow-2xl">
@@ -992,12 +1020,12 @@ export default function Restaurant3DExperience({
         id={stageElementId}
         ref={sceneContainerRef}
         className={`relative overflow-hidden border border-slate-700/50 bg-slate-950 ${
-          isFullscreen
+          isStageFullscreen
             ? 'fixed inset-0 z-[3000] h-screen w-screen rounded-none border-0'
             : 'h-[560px] rounded-xl'
         }`}
         onWheel={(event) => {
-          if (isFullscreen || isPointerLocked) {
+          if (isStageFullscreen || isPointerLocked) {
             event.preventDefault();
           }
         }}
@@ -1043,7 +1071,7 @@ export default function Restaurant3DExperience({
             <PointerLockControls selector={`#${stageElementId}`} />
           )}
         </Canvas>
-        {!isTouchDevice && !isReservationModalOpen && (
+        {!isReservationModalOpen && (
           <div className="pointer-events-none absolute inset-0 z-[15] flex items-center justify-center">
             <span className="select-none text-2xl font-bold tracking-tight text-slate-100/90 drop-shadow-[0_0_8px_rgba(15,23,42,0.85)]">
               ×
@@ -1052,36 +1080,38 @@ export default function Restaurant3DExperience({
         )}
         {!isReservationModalOpen && (
           <div className="absolute left-3 top-3 z-20 flex flex-col gap-2">
-          {!isTouchDevice && (
+            {!isTouchDevice && (
+              <button
+                type="button"
+                onClick={requestPointerLock}
+                className="rounded-lg border border-slate-600/80 bg-slate-900/90 px-3 py-2 text-xs font-medium text-slate-100 backdrop-blur-sm transition hover:bg-slate-800"
+              >
+                {isPointerLocked
+                  ? 'Mouse FPS activo (ESC para liberar)'
+                  : 'Activar mouse FPS'}
+              </button>
+            )}
             <button
               type="button"
-              onClick={requestPointerLock}
+              onClick={() => {
+                void toggleFullscreen();
+              }}
               className="rounded-lg border border-slate-600/80 bg-slate-900/90 px-3 py-2 text-xs font-medium text-slate-100 backdrop-blur-sm transition hover:bg-slate-800"
             >
-              {isPointerLocked
-                ? 'Mouse FPS activo (ESC para liberar)'
-                : 'Activar mouse FPS'}
+              {isStageFullscreen ? 'Salir pantalla completa' : 'Pantalla completa'}
             </button>
-          )}
-          <button
-            type="button"
-            onClick={() => {
-              void toggleFullscreen();
-            }}
-            className="rounded-lg border border-slate-600/80 bg-slate-900/90 px-3 py-2 text-xs font-medium text-slate-100 backdrop-blur-sm transition hover:bg-slate-800"
-          >
-            {isFullscreen ? 'Salir pantalla completa' : 'Pantalla completa'}
-          </button>
           </div>
         )}
 
         {isTouchDevice && !isReservationModalOpen && (
-          <div className="pointer-events-none absolute inset-0 z-20 flex items-end justify-between p-3">
+          <div className="pointer-events-none absolute inset-0 z-20 flex select-none items-end justify-between p-3">
             <div className="pointer-events-auto grid grid-cols-3 gap-2">
               <span />
               <button
                 type="button"
                 className={moveButtonClass}
+                style={mobileControlStyle}
+                onContextMenu={(event) => event.preventDefault()}
                 onPointerDown={(event) => {
                   event.preventDefault();
                   setMoveDirection('forward', true);
@@ -1096,6 +1126,8 @@ export default function Restaurant3DExperience({
               <button
                 type="button"
                 className={moveButtonClass}
+                style={mobileControlStyle}
+                onContextMenu={(event) => event.preventDefault()}
                 onPointerDown={(event) => {
                   event.preventDefault();
                   setMoveDirection('left', true);
@@ -1110,6 +1142,8 @@ export default function Restaurant3DExperience({
               <button
                 type="button"
                 className={moveButtonClass}
+                style={mobileControlStyle}
+                onContextMenu={(event) => event.preventDefault()}
                 onPointerDown={(event) => {
                   event.preventDefault();
                   setMoveDirection('right', true);
@@ -1124,6 +1158,8 @@ export default function Restaurant3DExperience({
               <button
                 type="button"
                 className={moveButtonClass}
+                style={mobileControlStyle}
+                onContextMenu={(event) => event.preventDefault()}
                 onPointerDown={(event) => {
                   event.preventDefault();
                   setMoveDirection('backward', true);
@@ -1141,6 +1177,8 @@ export default function Restaurant3DExperience({
               className={`pointer-events-auto flex h-28 w-28 items-center justify-center rounded-2xl border border-slate-600/80 text-xs font-medium text-slate-100 backdrop-blur-sm touch-none ${
                 isLookPadActive ? 'bg-violet-600/50' : 'bg-slate-900/85'
               }`}
+              style={mobileControlStyle}
+              onContextMenu={(event) => event.preventDefault()}
               onTouchStart={handleLookPadTouchStart}
               onTouchMove={handleLookPadTouchMove}
               onTouchEnd={endLookPadTouch}

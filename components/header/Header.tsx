@@ -107,7 +107,7 @@ export default function Header({
 
         <NavLinks lang={lang} />
 
-        <div className="flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-4">
           <UserMenu
             lang={lang}
             user={user}
@@ -143,6 +143,7 @@ export default function Header({
               isMobile
               closeMenu={() => setIsMenuOpen(false)}
             />
+            <LanguageSelector lang={lang} isMobile />
           </div>
         </>
       )}
