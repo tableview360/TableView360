@@ -1,5 +1,6 @@
+'use client';
 import { useEffect, useState } from 'react';
-import { fetchReservations } from '../lib/supabaseClient';
+import { createSupabaseBrowser } from '@/lib/supabase/client';
 import { useTranslation } from 'react-i18next';
 interface Reservation {
   id: number;
@@ -27,10 +28,16 @@ const ReservationsList = () => {
     try {
       setLoading(true);
       setError(null);
+      const supabase = createSupabaseBrowser();
+      const { data, error: fetchError } = await supabase
+        .from('reservations')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-      const data = await fetchReservations();
-
-      setReservations(data || []);
+      if (fetchError) {
+        throw fetchError;
+      }
+      setReservations((data as Reservation[]) || []);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('❌ Error completo:', err);

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { createSupabaseBrowser } from '@/lib/supabase/client';
-import type { User } from '@supabase/supabase-js';
+import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
 import NavLinks from '@/components/header/NavLinks';
 import LanguageSelector from '@/components/header/LanguageSelector';
 import UserMenu from '@/components/header/UserMenu';
@@ -71,7 +71,7 @@ export default function Header({
 
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event: AuthChangeEvent, session: Session | null) => {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
 

@@ -88,9 +88,9 @@ export default function ReservationForm({ restaurantId, restaurantName }: Props)
       }
 
       const reservedTableIds = new Set(
-        (data ?? [])
-          .map((reservation) => reservation.table_id as string | null)
-          .filter(Boolean) as string[],
+        ((data ?? []) as Array<{ table_id: string | null }>)
+          .map((reservation) => reservation.table_id)
+          .filter((tableId): tableId is string => Boolean(tableId)),
       );
 
       const filteredTables = tables.filter((table) => !reservedTableIds.has(table.id));

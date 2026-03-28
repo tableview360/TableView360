@@ -1,6 +1,7 @@
+'use client';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabaseClient';
+import { createSupabaseBrowser } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import { SpinnerIcon, UserIcon, LockIcon } from './icons';
@@ -22,6 +23,7 @@ const SettingsForm = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const supabase = createSupabaseBrowser();
 
   // Password change states
   const [newPassword, setNewPassword] = useState('');

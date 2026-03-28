@@ -69,7 +69,7 @@ export default function PopularRestaurants({ lang }: { lang: LangCode }) {
     supabase
       .from('restaurants')
       .select('id, name, slug, address, logo_url, reservations(count)')
-      .then(({ data }) => {
+      .then(({ data }: { data: Restaurant[] | null }) => {
         const sorted = (data ?? []).sort((a: Restaurant, b: Restaurant) => {
           const ca = a.reservations?.[0]?.count ?? 0;
           const cb = b.reservations?.[0]?.count ?? 0;

@@ -66,7 +66,7 @@ export default function RecentReservations({ userId, lang }: Props) {
       .eq('client_id', userId)
       .order('reservation_date', { ascending: false })
       .limit(3)
-      .then(({ data }) => {
+      .then(({ data }: { data: Reservation[] | null }) => {
         setReservations((data as unknown as Reservation[]) ?? []);
         setLoading(false);
       });
