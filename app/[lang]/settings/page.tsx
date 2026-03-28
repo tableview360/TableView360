@@ -23,16 +23,61 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   }
 
   const supabase = await createSupabaseServer();
+  const metadataUsername =
+    typeof user.user_metadata?.username === 'string'
+      ? user.user_metadata.username
+      : null;
+  const metadataFullName =
+    typeof user.user_metadata?.full_name === 'string'
+      ? user.user_metadata.full_name
+      : null;
+  const metadataPhone =
+    typeof user.user_metadata?.phone === 'string'
+      ? user.user_metadata.phone
+      : null;
+  const metadataAvatarUrl =
+    typeof user.user_metadata?.avatar_url === 'string'
+      ? user.user_metadata.avatar_url
+      : null;
 
   // 👤 perfil
-  const { data: profile } = await supabase
+  const { data: currentProfile } = await supabase
     .from('profiles')
     .select('username, full_name, phone, avatar_url')
     .eq('id', user.id)
     .maybeSingle();
+  let profile = currentProfile;
 
-  const username = profile?.username || profile?.full_name || null;
-  const avatarUrl = profile?.avatar_url ?? null;
+  if (!profile) {
+    const { data: upsertedProfile } = await supabase
+      .from('profiles')
+      .upsert(
+        {
+          id: user.id,
+          role: role ?? 'client',
+          username: metadataUsername,
+          full_name: metadataFullName,
+          phone: metadataPhone,
+          avatar_url: metadataAvatarUrl,
+        },
+        { onConflict: 'id' },
+      )
+      .select('username, full_name, phone, avatar_url')
+      .maybeSingle();
+
+    profile = upsertedProfile ?? null;
+  }
+
+  const resolvedUsername =
+    profile?.username ??
+    metadataUsername ??
+    profile?.full_name ??
+    metadataFullName ??
+    null;
+  const resolvedFullName = profile?.full_name ?? metadataFullName ?? null;
+  const resolvedPhone = profile?.phone ?? metadataPhone ?? null;
+
+  const avatarUrl = profile?.avatar_url ?? metadataAvatarUrl ?? null;
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-10 pt-24">
@@ -50,9 +95,9 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
       <ProfileSettings
         userId={user.id}
         role={role ?? null}
-        initialUsername={profile?.username ?? null}
-        initialFullName={profile?.full_name ?? null}
-        initialPhone={profile?.phone ?? null}
+        initialUsername={resolvedUsername}
+        initialFullName={resolvedFullName}
+        initialPhone={resolvedPhone}
         initialAvatarUrl={avatarUrl}
         email={user.email ?? null}
         lang={lang}

@@ -81,11 +81,7 @@ export default function Header({
           setRole(null);
         }
 
-        if (
-          event === 'SIGNED_IN' ||
-          event === 'SIGNED_OUT' ||
-          event === 'USER_UPDATED'
-        ) {
+        if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
           router.refresh();
         }
       },
@@ -95,9 +91,16 @@ export default function Header({
   }, [fetchProfile, router, supabase]);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push(`/${lang}`);
-    router.refresh();
+    const fallbackRedirect = `/${lang}`;
+    const logoutEndpoint = `/api/auth/logout?lang=${encodeURIComponent(lang)}`;
+
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch {
+      // Keep going to force server-side logout and avoid stuck sessions.
+    }
+
+    window.location.assign(logoutEndpoint || fallbackRedirect);
   };
 
   return (

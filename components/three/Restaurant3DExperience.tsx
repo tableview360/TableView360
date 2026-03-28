@@ -66,12 +66,10 @@ interface DocumentWithWebkitFullscreen extends Document {
   webkitFullscreenElement?: Element | null;
   webkitExitFullscreen?: () => Promise<void> | void;
 }
-interface ScreenWithOrientationLock extends Screen {
-  orientation?: ScreenOrientation & {
-    lock?: (orientation: 'landscape' | 'portrait' | string) => Promise<void>;
-    unlock?: () => void;
-  };
-}
+type ScreenOrientationWithOptionalLock = ScreenOrientation & {
+  lock?: (orientation: 'landscape' | 'portrait' | string) => Promise<void>;
+  unlock?: () => void;
+};
 
 const EYE_HEIGHT = 1.7;
 const DESKTOP_MOVE_SPEED = 4.25;
@@ -472,8 +470,8 @@ export default function Restaurant3DExperience({
 
   const lockLandscapeOrientation = useCallback(async () => {
     if (!isTouchDevice) return;
-    const screenWithOrientation = screen as ScreenWithOrientationLock;
-    const orientation = screenWithOrientation.orientation;
+    const orientation = screen
+      .orientation as ScreenOrientationWithOptionalLock | undefined;
     if (!orientation?.lock) return;
 
     try {
@@ -486,8 +484,8 @@ export default function Restaurant3DExperience({
 
   const unlockLandscapeOrientation = useCallback(() => {
     if (!hasLockedLandscapeRef.current) return;
-    const screenWithOrientation = screen as ScreenWithOrientationLock;
-    const orientation = screenWithOrientation.orientation;
+    const orientation = screen
+      .orientation as ScreenOrientationWithOptionalLock | undefined;
 
     if (orientation?.unlock) {
       try {
@@ -1113,7 +1111,10 @@ export default function Restaurant3DExperience({
           }
         }}
       >
-        <Canvas camera={{ position: [0, EYE_HEIGHT, 8], fov: 70 }} shadows>
+        <Canvas
+          camera={{ position: [0, EYE_HEIGHT, 8], fov: 70 }}
+          shadows="percentage"
+        >
           <color attach="background" args={['#020617']} />
           <ambientLight intensity={0.5} />
           <directionalLight
