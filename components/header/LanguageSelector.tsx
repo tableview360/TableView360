@@ -1,24 +1,24 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // ✅ CAMBIO
+import { useRouter } from 'next/navigation';
 import { useLanguage, type SupportedLanguage } from '../../hooks/useLanguage';
 import { GlobeIcon, DropdownArrow, CheckIcon } from '../icons';
 import { t, type LangCode } from '../../lib/i18n';
 
 interface LanguageSelectorProps {
-  lang: LangCode; // ✅ recibimos el idioma
+  lang: LangCode;
+  isMobile?: boolean;
 }
 
-
-const LanguageSelector = ( {lang}: LanguageSelectorProps) => {
+const LanguageSelector = ({ lang, isMobile = false }: LanguageSelectorProps) => {
 
   const languages: { code: SupportedLanguage; label: string; flag: string }[] = [
     { code: 'en', label: t('English', lang), flag: '🇬🇧' },
     { code: 'es', label: t('Español', lang), flag: '🇪🇸' },
   ];
   const { currentLang, getPathForLanguage } = useLanguage();
-  const router = useRouter(); // ✅ CAMBIO
+  const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -28,9 +28,8 @@ const LanguageSelector = ( {lang}: LanguageSelectorProps) => {
 
   const changeLanguage = (lng: SupportedLanguage) => {
     const newPath = getPathForLanguage(lng);
-
-    router.push(newPath); // ✅ CAMBIO
-    router.refresh(); // 🔥 importante para SSR
+    router.push(newPath);
+    router.refresh();
 
     setIsOpen(false);
   };
@@ -47,10 +46,12 @@ const LanguageSelector = ( {lang}: LanguageSelectorProps) => {
   }, []);
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className={isMobile ? 'relative w-full' : 'relative'} ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="cursor-pointer flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50 text-slate-300 hover:text-slate-50 hover:border-slate-600 transition-all"
+        className={`cursor-pointer flex items-center gap-2 rounded-lg bg-slate-800/60 border border-slate-700/50 text-slate-300 hover:text-slate-50 hover:border-slate-600 transition-all ${
+          isMobile ? 'w-full justify-between px-4 py-3' : 'px-3 py-2'
+        }`}
       >
         <GlobeIcon />
         <span className="text-sm font-medium">
@@ -60,7 +61,11 @@ const LanguageSelector = ( {lang}: LanguageSelectorProps) => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-40 bg-slate-800 border border-slate-700 shadow-xl z-[1001]">
+        <div
+          className={`absolute mt-2 bg-slate-800 border border-slate-700 shadow-xl z-[1001] ${
+            isMobile ? 'left-0 right-0 rounded-lg overflow-hidden' : 'right-0 w-40'
+          }`}
+        >
           {languages.map((lang) => (
             <button
               key={lang.code}
