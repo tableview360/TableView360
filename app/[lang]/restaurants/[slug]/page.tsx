@@ -3,6 +3,12 @@ import path from 'node:path';
 import { redirect } from 'next/navigation'
 import { t, langCodes, defaultLang, type LangCode } from '@/lib/i18n';
 import { createSupabaseServer } from '@/lib/supabase/server'
+import {
+  listRestaurantPhotosFromStorage,
+  RESTAURANT_PHOTO_BUCKETS,
+  RESTAURANT_PRIMARY_PHOTO_BUCKET,
+  resolveStoragePublicUrl,
+} from '@/lib/supabase/storage';
 import ReservationForm from '@/components/ReservationForm'
 import Restaurant3DExperience from '@/components/three/Restaurant3DExperience';
 
@@ -128,12 +134,17 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
 
   if (restaurantError || !restaurant) {
     redirect(`/${lang}/restaurants`);  }
+  const coverUrl = resolveStoragePublicUrl(
+    supabase,
+    restaurant.logo_url,
+    RESTAURANT_PRIMARY_PHOTO_BUCKET,
+    RESTAURANT_PHOTO_BUCKETS,
+  );
 
-  const { data: photos } = await supabase
-    .from('restaurant_photos')
-    .select('*')
-    .eq('restaurant_id', restaurant.id)
-    .order('sort_order')
+  const { photos } = await listRestaurantPhotosFromStorage({
+    client: supabase,
+    restaurantId: restaurant.id,
+  });
 
   const { data: tableRows } = await supabase
     .from('restaurants_tables')
@@ -151,9 +162,9 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
     <main className="mx-auto max-w-7xl px-6 pt-24 pb-10">
       {/* Cover */}
       <div className="aspect-[3/1] overflow-hidden rounded-2xl bg-slate-800">
-        {restaurant.logo_url ? (
+        {coverUrl ? (
           <img
-            src={restaurant.logo_url}
+            src={coverUrl}
             alt={restaurant.name}
             className="h-full w-full object-cover"
           />

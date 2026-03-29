@@ -5,6 +5,7 @@ import AdminClients from '@/components/admin/AdminClients';
 import AdminRestaurants from '@/components/admin/AdminRestaurants';
 import AdminReservations from '@/components/admin/AdminReservations';
 import { defaultLang, langCodes, localePath, type LangCode } from '@/lib/i18n';
+import { listRestaurantPhotosFromStorage } from '@/lib/supabase/storage';
 
 interface DashboardPageProps {
   params: Promise<{ lang: string }>;
@@ -85,10 +86,11 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
     .eq('restaurant_id', restaurant.id)
     .eq('status', 'confirmed');
 
-  const { count: photoCount } = await supabase
-    .from('restaurant_photos')
-    .select('*', { count: 'exact', head: true })
-    .eq('restaurant_id', restaurant.id);
+  const { photos: storagePhotos } = await listRestaurantPhotosFromStorage({
+    client: supabase,
+    restaurantId: restaurant.id,
+  });
+  const photoCount = storagePhotos.length;
 
   const stats = [
     {

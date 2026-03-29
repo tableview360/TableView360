@@ -10,6 +10,7 @@ import { localePath, t, type LangCode } from '../../lib/i18n';
 interface Profile {
   username: string | null;
   full_name: string | null;
+  avatar_url: string | null;
 }
 
 interface UserMenuProps {
@@ -53,6 +54,7 @@ export default function UserMenu({
   };
   const loginPath = localePath('/login', lang);
   const registerPath = localePath('/register', lang);
+  const settingsPath = localePath('/settings', lang);
   const dashboardPath = localePath('/dashboard', lang);
 
   const loginTabDesktopClass =
@@ -110,7 +112,7 @@ export default function UserMenu({
         </div>
 
         <button
-          onClick={() => goTo('/settings')}
+          onClick={() => goTo(settingsPath)}
           className="text-slate-300 py-3 text-base font-medium border-b border-slate-400/10 hover:text-slate-50 text-left"
         >
           Settings
@@ -143,11 +145,19 @@ export default function UserMenu({
         onClick={() => setIsOpen(!isOpen)}
         className="cursor-pointer flex items-center gap-2 text-slate-300 hover:text-slate-50"
       >
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-sm font-semibold">
-          {profile?.username?.[0]?.toUpperCase() ||
-            profile?.full_name?.[0]?.toUpperCase() ||
-            'U'}
-        </div>
+        {profile?.avatar_url ? (
+          <img
+            src={profile.avatar_url}
+            alt={profile?.username || profile?.full_name || user?.email || 'User'}
+            className="h-8 w-8 rounded-full border border-slate-600 object-cover"
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-sm font-semibold">
+            {profile?.username?.[0]?.toUpperCase() ||
+              profile?.full_name?.[0]?.toUpperCase() ||
+              'U'}
+          </div>
+        )}
 
         <span className="text-sm font-medium">
           {profile?.username || profile?.full_name || 'User'}
@@ -166,7 +176,7 @@ export default function UserMenu({
           </div>
 
           <button
-            onClick={() => goTo('/settings')}
+            onClick={() => goTo(settingsPath)}
             className="cursor-pointer w-full text-left px-4 py-3 text-slate-300 hover:bg-slate-700"
           >
             Settings

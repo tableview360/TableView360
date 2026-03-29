@@ -2,6 +2,14 @@
 import { useEffect, useState } from 'react';
 import { createSupabaseBrowser } from '../../lib/supabase/client';
 import { t, type LangCode } from '../../lib/i18n';
+import {
+  listRestaurantPhotosFromStorage,
+  RESTAURANT_PHOTO_BUCKETS,
+  RESTAURANT_PRIMARY_PHOTO_BUCKET,
+  resolveStorageObjectPath,
+  resolveStoragePublicUrl,
+  uploadToFirstAvailableBucket,
+} from '../../lib/supabase/storage';
 import RestaurantTablesManager from './RestaurantTablesManager';
 
 interface Props {
@@ -24,6 +32,9 @@ interface Photo {
   url: string;
   caption: string | null;
   sort_order: number;
+  source?: 'table' | 'storage';
+  storage_bucket?: string | null;
+  storage_path?: string | null;
 }
 
 export default function RestaurantEditor({lang}:Props) {
@@ -55,14 +66,28 @@ export default function RestaurantEditor({lang}:Props) {
       return;
     }
 
-    const { data: rest } = await supabase
+    const { data: rest, error: restaurantError } = await supabase
       .from('restaurants')
       .select('*')
       .eq('owner_id', user.id)
       .single();
 
+    if (restaurantError) {
+      setMessage(`Error al cargar restaurante: ${restaurantError.message}`);
+      setLoading(false);
+      return;
+    }
+
     if (rest) {
-      setRestaurant(rest);
+      setRestaurant({
+        ...rest,
+        logo_url: resolveStoragePublicUrl(
+          supabase,
+          rest.logo_url,
+          RESTAURANT_PRIMARY_PHOTO_BUCKET,
+          RESTAURANT_PHOTO_BUCKETS,
+        ),
+      });
       setForm({
         name: rest.name || '',
         email: rest.email || '',
@@ -72,12 +97,21 @@ export default function RestaurantEditor({lang}:Props) {
         city: rest.city || '',
       });
 
-      const { data: photoData } = await supabase
-        .from('restaurant_photos')
-        .select('*')
-        .eq('restaurant_id', rest.id)
-        .order('sort_order');
-      setPhotos(photoData ?? []);
+      const { photos: storagePhotos, errorMessage } =
+        await listRestaurantPhotosFromStorage({
+          client: supabase,
+          restaurantId: rest.id,
+        });
+
+      setPhotos(
+        storagePhotos.map((photo) => ({
+          ...photo,
+          source: 'storage' as const,
+        })),
+      );
+      if (errorMessage) {
+        setMessage(`Error al cargar galería: ${errorMessage}`);
+      }
     }
     setLoading(false);
   }
@@ -119,30 +153,31 @@ export default function RestaurantEditor({lang}:Props) {
   async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     if (!restaurant || !e.target.files?.length) return;
     setUploading(true);
+    setMessage('');
 
     const file = e.target.files[0];
-    const ext = file.name.split('.').pop();
+    const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
     const filePath = `${restaurant.id}/${Date.now()}.${ext}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from('restaurant-photos')
-      .upload(filePath, file);
-
-    if (uploadError) {
-      setMessage(`Error al subir: ${uploadError.message}`);
+    try {
+      await uploadToFirstAvailableBucket({
+        client: supabase,
+        buckets: RESTAURANT_PHOTO_BUCKETS,
+        path: filePath,
+        file,
+        options: {
+          contentType: file.type || 'application/octet-stream',
+        },
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
+      setMessage(`Error al subir: ${errorMessage}`);
       setUploading(false);
       return;
     }
 
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from('restaurant-photos').getPublicUrl(filePath);
-
-    await supabase.from('restaurant_photos').insert({
-      restaurant_id: restaurant.id,
-      url: publicUrl,
-      sort_order: photos.length,
-    });
+    setMessage('Foto subida.');
 
     setUploading(false);
     load();
@@ -154,22 +189,28 @@ export default function RestaurantEditor({lang}:Props) {
     setMessage('');
 
     const file = e.target.files[0];
-    const ext = file.name.split('.').pop();
+    const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
     const filePath = `${restaurant.id}/cover-${Date.now()}.${ext}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from('restaurant-photos')
-      .upload(filePath, file, { upsert: true });
-
-    if (uploadError) {
-      setMessage(`Error al subir portada: ${uploadError.message}`);
+    let uploadResult: { bucket: string; path: string; publicUrl: string };
+    try {
+      uploadResult = await uploadToFirstAvailableBucket({
+        client: supabase,
+        buckets: RESTAURANT_PHOTO_BUCKETS,
+        path: filePath,
+        file,
+        options: {
+          upsert: true,
+          contentType: file.type || 'application/octet-stream',
+        },
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Error desconocido';
+      setMessage(`Error al subir portada: ${errorMessage}`);
       setUploadingCover(false);
       return;
     }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from('restaurant-photos').getPublicUrl(filePath);
 
     const {
       data: { user },
@@ -183,11 +224,12 @@ export default function RestaurantEditor({lang}:Props) {
 
     const { error: updateError } = await supabase
       .from('restaurants')
-      .update({ logo_url: publicUrl })
+      .update({ logo_url: uploadResult.publicUrl })
       .eq('id', restaurant.id)
       .eq('owner_id', user.id);
 
     if (updateError) {
+      await supabase.storage.from(uploadResult.bucket).remove([uploadResult.path]);
       setMessage(`Error al guardar portada: ${updateError.message}`);
       setUploadingCover(false);
       return;
@@ -200,14 +242,29 @@ export default function RestaurantEditor({lang}:Props) {
 
   async function handleDeletePhoto(photo: Photo) {
     if (!confirm('¿Eliminar esta foto?')) return;
+    const storageObject =
+      photo.storage_bucket && photo.storage_path
+        ? { bucket: photo.storage_bucket, path: photo.storage_path }
+        : resolveStorageObjectPath(
+            photo.url,
+            RESTAURANT_PRIMARY_PHOTO_BUCKET,
+            RESTAURANT_PHOTO_BUCKETS,
+          );
 
-    // Extract file path from URL
-    const urlParts = photo.url.split('/restaurant-photos/');
-    if (urlParts[1]) {
-      await supabase.storage.from('restaurant-photos').remove([urlParts[1]]);
+    if (!storageObject) {
+      setMessage('No se pudo resolver la ruta del archivo para eliminar.');
+      return;
     }
 
-    await supabase.from('restaurant_photos').delete().eq('id', photo.id);
+    const { error: removeError } = await supabase.storage
+      .from(storageObject.bucket)
+      .remove([storageObject.path]);
+
+    if (removeError) {
+      setMessage(`Error al eliminar archivo: ${removeError.message}`);
+      return;
+    }
+
     load();
   }
 
@@ -393,8 +450,9 @@ export default function RestaurantEditor({lang}:Props) {
                   className="h-full w-full object-cover"
                 />
                 <button
+                  type="button"
                   onClick={() => handleDeletePhoto(photo)}
-                  className="absolute top-2 right-2 rounded-full bg-red-600 p-1.5 text-white opacity-0 transition group-hover:opacity-100"
+                  className="absolute top-2 right-2 rounded-full bg-red-600 p-1.5 text-white opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100"
                   title="Delete"
                 >
                   <svg
