@@ -4,6 +4,7 @@ import Header from "@/components/header/Header";
 import Footer from "@/components/footer/footer";
 import { langCodes, defaultLang, type LangCode } from "@/lib/i18n";
 import { createSupabaseServer } from "@/lib/supabase/server";
+import { AVATAR_BUCKET, resolveStoragePublicUrl } from "@/lib/supabase/storage";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -49,15 +50,23 @@ export default async function RootLayout({
   let avatarUrl: string | null = null;
 
   if (user) {
+    const metadataAvatarUrl =
+      typeof user.user_metadata?.avatar_url === 'string'
+        ? user.user_metadata.avatar_url
+        : null;
     const { data: profile } = await supabase
       .from("profiles")
-      .select("role, username, full_name, avatar_url")
+      .select("role, username, full_name")
       .eq("id", user.id)
       .maybeSingle();
 
     role = profile?.role ?? null;
     username = profile?.username || profile?.full_name || null;
-    avatarUrl = profile?.avatar_url ?? null;
+    avatarUrl = resolveStoragePublicUrl(
+      supabase,
+      metadataAvatarUrl,
+      AVATAR_BUCKET,
+    );
   }
 
   return (

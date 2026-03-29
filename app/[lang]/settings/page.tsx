@@ -3,6 +3,7 @@ import { createSupabaseServer } from '@/lib/supabase/server';
 import { getUserWithRole } from '@/lib/auth';
 import ProfileSettings from '@/components/ProfileSettings';
 import { t, defaultLang, langCodes, type LangCode } from '@/lib/i18n';
+import { AVATAR_BUCKET, resolveStoragePublicUrl } from '@/lib/supabase/storage';
 
 interface SettingsPageProps {
   params: Promise<{ lang: string }>;
@@ -43,7 +44,7 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   // 👤 perfil
   const { data: currentProfile } = await supabase
     .from('profiles')
-    .select('username, full_name, phone, avatar_url')
+    .select('username, full_name, phone')
     .eq('id', user.id)
     .maybeSingle();
   let profile = currentProfile;
@@ -58,11 +59,10 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
           username: metadataUsername,
           full_name: metadataFullName,
           phone: metadataPhone,
-          avatar_url: metadataAvatarUrl,
         },
         { onConflict: 'id' },
       )
-      .select('username, full_name, phone, avatar_url')
+      .select('username, full_name, phone')
       .maybeSingle();
 
     profile = upsertedProfile ?? null;
@@ -77,7 +77,11 @@ export default async function SettingsPage({ params }: SettingsPageProps) {
   const resolvedFullName = profile?.full_name ?? metadataFullName ?? null;
   const resolvedPhone = profile?.phone ?? metadataPhone ?? null;
 
-  const avatarUrl = profile?.avatar_url ?? metadataAvatarUrl ?? null;
+  const avatarUrl = resolveStoragePublicUrl(
+    supabase,
+    metadataAvatarUrl ?? null,
+    AVATAR_BUCKET,
+  );
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-10 pt-24">

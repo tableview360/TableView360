@@ -9,10 +9,12 @@ import UserMenu from '@/components/header/UserMenu';
 import Logo from '@/components/ui/Logo';
 import { useRouter } from 'next/navigation';
 import { langCodes, defaultLang, type LangCode } from '@/lib/i18n';
+import { AVATAR_BUCKET, resolveStoragePublicUrl } from '@/lib/supabase/storage';
 
 interface Profile {
   username: string | null;
   full_name: string | null;
+  avatar_url: string | null;
 }
 
 interface HeaderProps {
@@ -28,6 +30,7 @@ export default function Header({
   lang: rawLang,
   role: initialRole,
   username: initialUsername,
+  avatarUrl: initialAvatarUrl,
 }: HeaderProps) {
   const lang: LangCode = langCodes.includes(rawLang as LangCode)
     ? (rawLang as LangCode)
@@ -40,6 +43,7 @@ export default function Header({
       ? {
           username: initialUsername ?? null,
           full_name: initialUsername ?? null,
+          avatar_url: initialAvatarUrl ?? null,
         }
       : null,
   );
@@ -55,19 +59,37 @@ export default function Header({
         .select('username, full_name, role')
         .eq('id', userId)
         .maybeSingle();
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
+      const metadataAvatarUrl =
+        typeof authUser?.user_metadata?.avatar_url === 'string'
+          ? authUser.user_metadata.avatar_url
+          : null;
+      const resolvedAvatarUrl = resolveStoragePublicUrl(
+        supabase,
+        metadataAvatarUrl,
+        AVATAR_BUCKET,
+      );
 
       setProfile(
         data
           ? {
               username: data.username,
               full_name: data.full_name,
+              avatar_url: resolvedAvatarUrl,
             }
-          : null,
+          : {
+              username: null,
+              full_name: null,
+              avatar_url: resolvedAvatarUrl,
+            },
       );
       setRole(data?.role ?? null);
     },
     [supabase],
   );
+
 
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange(
@@ -89,6 +111,17 @@ export default function Header({
 
     return () => listener.subscription.unsubscribe();
   }, [fetchProfile, router, supabase]);
+
+  useEffect(() => {
+    const handleProfileUpdated = () => {
+      if (!user) return;
+      void fetchProfile(user.id);
+    };
+
+    window.addEventListener('profile:updated', handleProfileUpdated);
+    return () =>
+      window.removeEventListener('profile:updated', handleProfileUpdated);
+  }, [fetchProfile, user]);
 
   const handleSignOut = async () => {
     const fallbackRedirect = `/${lang}`;

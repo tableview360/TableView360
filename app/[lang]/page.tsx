@@ -17,22 +17,6 @@ export default async function HomePage({ params }: HomePageProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let role = null;
-  let username: string | null = null;
-  let avatarUrl: string | null = null;
-
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role, username, full_name, avatar_url')
-      .eq('id', user.id)
-      .single();
-
-    role = profile?.role ?? null;
-    username = profile?.username || profile?.full_name || null;
-    avatarUrl = profile?.avatar_url ?? null;
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero */}

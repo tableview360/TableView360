@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { createSupabaseBrowser } from '../lib/supabase/client';
 import { t, type LangCode } from '../lib/i18n';
+import { useRouter } from 'next/navigation';
+import { AVATAR_BUCKET } from '../lib/supabase/storage';
 
 interface Props {
   userId: string;
@@ -25,6 +27,7 @@ export default function ProfileSettings({
   lang,
 }: Props) {
   const supabase = createSupabaseBrowser();
+  const router = useRouter();
 
   // --- Avatar ---
   const [avatarUrl, setAvatarUrl] = useState<string | null>(initialAvatarUrl);
@@ -46,34 +49,47 @@ export default function ProfileSettings({
 
     setAvatarLoading(true);
     setAvatarError('');
+    try {
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const path = `${userId}/avatar.${ext}`;
 
-    const ext = file.name.split('.').pop();
-    const path = `${userId}/avatar.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from(AVATAR_BUCKET)
+        .upload(path, file, {
+          upsert: true,
+          contentType: file.type || 'application/octet-stream',
+        });
 
-    const { error: uploadError } = await supabase.storage
-      .from('client-avatars')
-      .upload(path, file, { upsert: true });
+      if (uploadError) {
+        setAvatarError(uploadError.message);
+        return;
+      }
 
-    if (uploadError) {
-      setAvatarError(uploadError.message);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from(AVATAR_BUCKET).getPublicUrl(path);
+
+      // Add cache-busting so the browser reloads the new image
+      const urlWithBust = `${publicUrl}?t=${Date.now()}`;
+
+      const { error: profileError } = await supabase.auth.updateUser({
+        data: { avatar_url: publicUrl },
+      });
+
+      if (profileError) {
+        setAvatarError(`Foto subida, pero no se pudo guardar en perfil: ${profileError.message}`);
+      }
+
+      setAvatarUrl(urlWithBust);
+      window.dispatchEvent(new Event('profile:updated'));
+      router.refresh();
+    } catch (error) {
+      setAvatarError(
+        error instanceof Error ? error.message : 'Error al subir la imagen.',
+      );
+    } finally {
       setAvatarLoading(false);
-      return;
     }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from('client-avatars').getPublicUrl(path);
-
-    // Add cache-busting so the browser reloads the new image
-    const urlWithBust = `${publicUrl}?t=${Date.now()}`;
-
-    await supabase
-      .from('profiles')
-      .update({ avatar_url: publicUrl })
-      .eq('id', userId);
-
-    setAvatarUrl(urlWithBust);
-    setAvatarLoading(false);
   }
 
   // --- Profile form ---
@@ -113,6 +129,8 @@ export default function ProfileSettings({
       setProfileError(error.message);
     } else {
       setProfileMsg(t('profile.update_success', lang));
+      window.dispatchEvent(new Event('profile:updated'));
+      router.refresh();
     }
     setProfileLoading(false);
   }
